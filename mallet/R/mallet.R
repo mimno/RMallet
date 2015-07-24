@@ -1,15 +1,15 @@
-MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { .jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) }
+MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) }
 
-mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) { .jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) }
-mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { .jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) }
+mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) { rJava::.jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) }
+mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { rJava::.jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) }
 
 mallet.word.freqs <- function(topic.model) {
-  word.freqs <- .jevalArray(topic.model$getWordFrequencies(), simplify=T)
+  word.freqs <- rJava::.jevalArray(topic.model$getWordFrequencies(), simplify=T)
   data.frame(words = topic.model$getVocabulary(), term.freq = word.freqs[,1], doc.freq = word.freqs[,2])
 }
 
 mallet.subset.topic.words <- function(topic.model, subset.docs, normalized=FALSE, smoothed=FALSE) {
-  .jevalArray(topic.model$getSubCorpusTopicWords(subset.docs, normalized, smoothed), simplify=T)
+  rJava::.jevalArray(topic.model$getSubCorpusTopicWords(subset.docs, normalized, smoothed), simplify=T)
 }
 
 mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
@@ -20,19 +20,19 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   stoplist.file <- normalizePath(stoplist.file)
   if (class(text.array[1]) != "character") stop("Text field is not a string. Remember to create data frames with stringsAsFactors=F.")
-  token.pattern <- J("java/util/regex/Pattern")$compile(token.regexp)
-  pipe.list <- .jnew("java/util/ArrayList")
-  pipe.list$add(.jnew("cc/mallet/pipe/CharSequence2TokenSequence", token.pattern))
-  if (! preserve.case) { pipe.list$add(.jnew("cc/mallet/pipe/TokenSequenceLowercase")) }
-  pipe.list$add(.jnew("cc/mallet/pipe/TokenSequenceRemoveStopwords", .jnew("java/io/File", stoplist.file), "UTF-8", FALSE, FALSE, FALSE))
-  pipe.list$add(.jnew("cc/mallet/pipe/TokenSequence2FeatureSequence"))
-  #pipe.list$add(.jnew("cc/mallet/pipe/PrintInputAndTarget"))
+  token.pattern <- rJava::J("java/util/regex/Pattern")$compile(token.regexp)
+  pipe.list <- rJava::.jnew("java/util/ArrayList")
+  pipe.list$add(rJava::.jnew("cc/mallet/pipe/CharSequence2TokenSequence", token.pattern))
+  if (! preserve.case) { pipe.list$add(rJava::.jnew("cc/mallet/pipe/TokenSequenceLowercase")) }
+  pipe.list$add(rJava::.jnew("cc/mallet/pipe/TokenSequenceRemoveStopwords", rJava::.jnew("java/io/File", stoplist.file), "UTF-8", FALSE, FALSE, FALSE))
+  pipe.list$add(rJava::.jnew("cc/mallet/pipe/TokenSequence2FeatureSequence"))
+  #pipe.list$add(rJava::.jnew("cc/mallet/pipe/PrintInputAndTarget"))
 
-  pipe <- .jnew("cc/mallet/pipe/SerialPipes", .jcast(pipe.list, "java/util/Collection"))
+  pipe <- rJava::.jnew("cc/mallet/pipe/SerialPipes", rJava::.jcast(pipe.list, "java/util/Collection"))
 
-  instances <- .jnew("cc/mallet/types/InstanceList", .jcast(pipe, "cc/mallet/pipe/Pipe"))
+  instances <- rJava::.jnew("cc/mallet/types/InstanceList", rJava::.jcast(pipe, "cc/mallet/pipe/Pipe"))
 
-  J("cc/mallet/topics/RTopicModel")$addInstances(instances, id.array, text.array)
+  rJava::J("cc/mallet/topics/RTopicModel")$addInstances(instances, id.array, text.array)
 
   return(instances)
 }
@@ -75,4 +75,12 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
   topic.docs <- topic.docs / rowSums(topic.docs)
 
   hclust(balance * dist(topic.words) + (1.0 - balance) * dist(topic.docs))
+}
+
+mallet.save.instances <- function(instances, filename) {
+  instances$save(rJava::.jnew("java/io/File", filename))
+}
+
+mallet.load <- function(filename) {
+  rJava::J("cc.mallet.types.InstanceList")$load(rJava::.jnew("java/io/File", filename))
 }
