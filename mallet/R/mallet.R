@@ -446,7 +446,7 @@ mallet.topic.labels <- function(topic.model, topic.words, num.top.words = 3) {
 #' A value between 0.0 (use only document-level similarity) 
 #' and 1.0 (use only word-level similarity).
 #' @param ... 
-#' Further arguments for \link{\code{hclust}}.
+#' Further arguments for \code{\link[stats]{hclust}}.
 #' 
 #' @seealso 
 #' This function uses data matrices from \code{\link{mallet.doc.topics}} 

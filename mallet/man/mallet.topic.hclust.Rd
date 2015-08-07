@@ -14,7 +14,7 @@ mallet.topic.hclust(doc.topics, topic.words, balance = 0.3, ...)
 \item{balance}{A value between 0.0 (use only document-level similarity)
 and 1.0 (use only word-level similarity).}
 
-\item{...}{Further arguments for \link{\code{hclust}}.}
+\item{...}{Further arguments for \code{\link[stats]{hclust}}.}
 }
 \description{
 Returns a hierarchical clustering of topics that can be plotted as a dendrogram.
