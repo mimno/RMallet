@@ -209,7 +209,23 @@ mallet.subset.topic.words <- function(topic.model, subset.docs, normalized=FALSE
 }
 
 
-
+#' @title 
+#' Get the most probable words and their probabilities for one topic
+#' 
+#' @description 
+#' This function returns a data frame with two columns, one containing the most 
+#' probable words as character values, the second containing the weight assigned 
+#' to that word in the word weights vector you supplied.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param word.weights 
+#' A vector of word weights for one topic, usually a row from the \code{topic.words} 
+#' matrix from \code{mallet.topic.words}.
+#' @param num.top.words
+#' The number of most probable words to return. If not specified, defaults to 10.
+#' 
+#' @export
 mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
   top.indices <- order(word.weights, decreasing=T)[1:num.top.words]
   data.frame(words = topic.model$getVocabulary()[top.indices], weights = word.weights[top.indices], stringsAsFactors=F)
