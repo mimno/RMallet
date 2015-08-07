@@ -170,7 +170,40 @@ mallet.word.freqs <- function(topic.model) {
 }
 
 
-
+#' @title 
+#' Estimate topic-word distributions from a sub-corpus
+#' 
+#' @description 
+#' This function returns a matrix of word probabilities for each topic similar to 
+#' \code{\link{mallet.topic.words}}, but estimated from a subset of the documents 
+#' in the corpus. The model assumes that topics are the same no matter where they 
+#' are used, but we know this is often not the case. This function lets us test 
+#' whether some words are used more or less than we expect in a particular set 
+#' of documents.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param subset.docs 
+#' An array of \code{TRUE}/\code{FALSE} values specifying which documents should 
+#' be used and which should be ignored.
+#' @param normalized 
+#' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing 
+#' the actual number of words of each type in the topics.
+#' @param smoothed 
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified 
+#' as \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @seealso 
+#' \code{\link{mallet.topic.words}}
+#' 
+#' @examples 
+#' \dontrun{
+#' nips.topic.words <- 
+#'   mallet.subset.topic.words(topic.model, documents$class == "NIPS", smoothed=T, normalized=T)
+#' }
+#' 
+#' @export
 mallet.subset.topic.words <- function(topic.model, subset.docs, normalized=FALSE, smoothed=FALSE) {
   .jevalArray(topic.model$getSubCorpusTopicWords(subset.docs, normalized, smoothed), simplify=T)
 }
