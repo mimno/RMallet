@@ -339,7 +339,27 @@ mallet.read.dir <- function(Dir) {
 
 
 ## Get a vector containing short names for all the topics
-mallet.topic.labels <- function(topic.model, topic.words, num.top.words=3) {
+
+#' @title 
+#' Get strings containing the most probable words for each topic
+#' 
+#' @description 
+#' This function returns a vector of strings, one for each topic, with the 
+#' most probable words in that topic separated by spaces.
+#'
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param topic.words
+#' The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
+#' @param num.top.words
+#' The number of words to include for each topic
+#' 
+#' @seealso 
+#' \code{\link{mallet.topic.words}} produces topic-word weights. 
+#' \code{\link{mallet.top.words}} produces a data frame for a single topic.
+#' 
+#' @export
+mallet.topic.labels <- function(topic.model, topic.words, num.top.words = 3) {
   n.topics <- dim(topic.words)[1]
   topics.labels <- rep("", n.topics)
   for (topic in 1:n.topics) topics.labels[topic] <- paste(mallet.top.words(topic.model, topic.words[topic,], num.top.words)$words, collapse=" ")
