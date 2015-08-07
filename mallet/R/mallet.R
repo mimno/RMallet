@@ -232,7 +232,37 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 }
 
 
-
+#' @title 
+#' Import text documents into Mallet format
+#' 
+#' @description 
+#' This function takes an array of document IDs and text files (as character strings) 
+#' and converts them into a Mallet instance list.
+#' 
+#' @param id.array
+#' An array of document IDs.
+#' @param text.array
+#' An array of text strings to use as documents. The type of the array must be \code{character}.
+#' @param stoplist.file
+#' The name of a file containing stopwords (words to ignore), one per line. 
+#' If the file is not in the current working directory, you may need to include a full path.
+#' @param preserve.case
+#' By default, the input text is converted to all lowercase
+#' @param token.regexp
+#' A quoted string representing a regular expression that defines a token. The default 
+#' is one or more unicode letter: "[\\\\p\{L\}]+". Note that special characters must 
+#' have double backslashes.
+#' 
+#' @seealso 
+#' \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.
+#' 
+#' @examples 
+#' \dontrun{
+#' mallet.instances <- mallet.import(documents$id, documents$text, "en.txt",
+#'                                   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' }
+#' 
+#' @export
 mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   stoplist.file <- normalizePath(stoplist.file)
   if (class(text.array[1]) != "character") stop("Text field is not a string. Remember to create data frames with stringsAsFactors=F.")
