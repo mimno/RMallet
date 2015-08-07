@@ -97,7 +97,30 @@ MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) {
 }
 
 
-mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) { .jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) }
+
+
+#' @title 
+#' Retrieve a matrix of words weights for topics
+#' 
+#' @description 
+#' This function returns a matrix with one row for every topic 
+#' and one column for every word in the vocabulary.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param normalized
+#' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing the 
+#' actual number of words of each type in the topics.
+#' @param smoothed
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+#' \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @export
+mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) { 
+  .jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) 
+}
+
 mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { .jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) }
 
 mallet.word.freqs <- function(topic.model) {
