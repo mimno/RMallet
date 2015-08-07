@@ -121,21 +121,50 @@ mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
   .jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) 
 }
 
-mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { .jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) }
+
+#' @title 
+#' Retrieve a matrix of topic weights for every document
+#' 
+#' @description 
+#' This function returns a matrix with one row for every document and one 
+#' column for every topic.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param normalized
+#' If \code{TRUE}, normalize the rows so that each document sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing the 
+#' actual number of words of each topic in the documents.
+#' @param smoothed
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+#' \code{alpha.sum} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @export
+mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { 
+  .jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) 
+}
+
+
 
 mallet.word.freqs <- function(topic.model) {
   word.freqs <- .jevalArray(topic.model$getWordFrequencies(), simplify=T)
   data.frame(words = topic.model$getVocabulary(), term.freq = word.freqs[,1], doc.freq = word.freqs[,2])
 }
 
+
+
 mallet.subset.topic.words <- function(topic.model, subset.docs, normalized=FALSE, smoothed=FALSE) {
   .jevalArray(topic.model$getSubCorpusTopicWords(subset.docs, normalized, smoothed), simplify=T)
 }
+
+
 
 mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
   top.indices <- order(word.weights, decreasing=T)[1:num.top.words]
   data.frame(words = topic.model$getVocabulary()[top.indices], weights = word.weights[top.indices], stringsAsFactors=F)
 }
+
+
 
 mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   stoplist.file <- normalizePath(stoplist.file)
@@ -156,6 +185,8 @@ mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FAL
 
   return(instances)
 }
+
+
 
 # mallet.read.dir() function, created by Dan Bowen
 # This function takes a directory path as its only argument
