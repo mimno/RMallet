@@ -367,10 +367,40 @@ mallet.topic.labels <- function(topic.model, topic.words, num.top.words = 3) {
 }
 
 ## Return a hierarchical clustering of topics.
-mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
+
+#' @title 
+#' Return a hierarchical clustering of topics
+#' 
+#' @description 
+#' Returns a hierarchical clustering of topics that can be plotted as a dendrogram. 
+#' There are two ways of measuring topic similarity: topics may contain the some of 
+#' the same words, or the may appear in some of the same documents. The \code{balance} parameter allows you to interpolate between the similarities determined by these two methods.
+#' 
+#' @param doc.topics
+#' A documents by topics matrix of topic probabilities.
+#' @param topic.words
+#' A topics by words matrix of word probabilities.
+#' @param balance
+#' A value between 0.0 (use only document-level similarity) 
+#' and 1.0 (use only word-level similarity).
+#' @param ... 
+#' Further arguments for \link{\code{hclust}}.
+#' 
+#' @seealso 
+#' This function uses data matrices from \code{\link{mallet.doc.topics}} 
+#' and \code{\link{mallet.topic.words}}
+#' 
+#' @examples 
+#' \dontrun{
+#' topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
+#' plot(mallet.topic.hclust(doc.topics, topic.words, 0.3), labels=topic.labels)
+#' }
+#' 
+#' @export
+mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3, ...) {
   ## transpose and normalize the doc topics
   topic.docs <- t(doc.topics)
   topic.docs <- topic.docs / rowSums(topic.docs)
 
-  hclust(balance * dist(topic.words) + (1.0 - balance) * dist(topic.docs))
+  stats::hclust(balance * dist(topic.words) + (1.0 - balance) * dist(topic.docs), ...)
 }
