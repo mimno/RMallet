@@ -146,6 +146,24 @@ mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
 
 
 
+
+#' @title 
+#' Descriptive statistics of word frequencies
+#' 
+#' @description 
+#' This method returns a data frame with one row for each unique vocabulary word, 
+#' and three columns: the word as a \code{character} value, the total number of 
+#' tokens of that word type, and the total number of documents that contain that 
+#' word at least once. This information can be useful in identifying candidate 
+#' stopwords.
+#' 
+#' @param topic.model
+#' A Mallet topic trainer returned by \code{MalletLDA}
+#' 
+#' @seealso 
+#' \code{\link{MalletLDA}}
+#' 
+#' @export
 mallet.word.freqs <- function(topic.model) {
   word.freqs <- .jevalArray(topic.model$getWordFrequencies(), simplify=T)
   data.frame(words = topic.model$getVocabulary(), term.freq = word.freqs[,1], doc.freq = word.freqs[,2])
