@@ -284,13 +284,42 @@ mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FAL
 }
 
 
-
 # mallet.read.dir() function, created by Dan Bowen
 # This function takes a directory path as its only argument
 # ... and returns a data.frame() with 2 columns: <id> & <text>.
 # ... This data.frame() has as many rows as there are files in the Dir.
 # The form of this functions return attempts to conform to that
 # ... used by the mallet.import() function, available in the 'mallet' R package
+
+#' @title 
+#' Import documents from a directory into Mallet format
+#' 
+#' @author Dan Bowen
+#' 
+#' @description 
+#'  This function takes a directory path as its only argument and returns a 
+#'  \code{data.frame} with two columns: <id> & <text>,
+#'  which can be passed to the \code{mallet.import} function.
+#'  This \code{data.frame} has as many rows as there are files in the \code{Dir}.
+#' 
+#' @param Dir
+#' The path to a directory containing one document per file.
+#' 
+#' @note 
+#' This function was contributed to RMallet by Dan Bowen. 
+#' 
+#' @seealso 
+#' \code{\link{mallet.import}}
+#' 
+#' @examples 
+#' \dontrun{
+#' documents <- mallet.read.dir(Dir)
+#' mallet.instances <- 
+#'   mallet.import(documents$id, documents$text, "en.txt", 
+#'                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' }
+#' 
+#' @export
 mallet.read.dir <- function(Dir) {
   # get Dir Files (filepaths)
   Files <- file.path(Dir, list.files(Dir))
@@ -307,6 +336,7 @@ mallet.read.dir <- function(Dir) {
   # ... rbind the resulting list of data.frames together
   do.call(rbind, lapply(Files, mallet.read.file))
 }
+
 
 ## Get a vector containing short names for all the topics
 mallet.topic.labels <- function(topic.model, topic.words, num.top.words=3) {
