@@ -4,7 +4,7 @@
 \name{mallet}
 \alias{mallet}
 \alias{mallet-package}
-\title{An R wrapper for the Mallet topic modeling package}
+\title{An R Wrapper for the Mallet Topic Modeling Package}
 \description{
 This package provides an interface to the Java implementation of latent
 Dirichlet allocation in the Mallet machine learning package. Mallet has many

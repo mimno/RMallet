@@ -1,5 +1,5 @@
 #' @title 
-#' An R wrapper for the Mallet topic modeling package
+#' An R Wrapper for the Mallet Topic Modeling Package
 #' 
 #' @description
 #' This package provides an interface to the Java implementation of latent 
