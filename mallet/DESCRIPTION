@@ -9,5 +9,7 @@ Description: This package allows you to train topic models in mallet and load re
 License: MIT + file LICENSE
 SystemRequirements: java
 Depends: rJava
-Suggests: knitr, tm
+Suggests: knitr, 
+    tm,
+    testthat
 VignetteBuilder: knitr
