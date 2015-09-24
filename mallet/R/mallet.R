@@ -54,7 +54,7 @@
 #' Hyperparameter optimization:
 #' \cite{Hanna Wallach, David Mimno, Andrew McCallum. Rethinking LDA: Why Priors Matter. NIPS, 2010.}
 #' 
-#' @name mallet
+#' @name mallet-package
 #' @docType package
 #' @import rJava
 NULL
