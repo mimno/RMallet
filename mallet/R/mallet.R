@@ -1,6 +1,186 @@
+#' @title 
+#' An R Wrapper for the Mallet Topic Modeling Package
+#' 
+#' @description
+#' This package provides an interface to the Java implementation of latent 
+#' Dirichlet allocation in the Mallet machine learning package. Mallet has many 
+#' functions, this wrapper focuses on the topic modeling sub-package written by 
+#' David Mimno. The package uses the \code{rJava} package to connect to a JVM.
+#' 
+#' @details 
+#' \tabular{ll}{
+#' Package: \tab mallet\cr
+#' Type: \tab Package\cr
+#' Version: \tab 1.0\cr
+#' Date: \tab 2013-08-08\cr
+#' License: \tab MIT\cr
+#' }
+#' 
+#' Create a topic model trainer: 
+#' \code{\link{MalletLDA}}
+#' 
+#' Load documents from disk and import them:
+#' \code{\link{mallet.read.dir}} 
+#' \code{\link{mallet.import}}
+#' 
+#' Get info about word frequencies: 
+#' \code{\link{mallet.word.freqs}}
+#' 
+#' Get trained model parameters:
+#' \code{\link{mallet.doc.topics}}
+#' \code{\link{mallet.topic.words}}
+#' \code{\link{mallet.subset.topic.words}}
+#' 
+#' Reports on topic words:
+#' \code{\link{mallet.top.words}}
+#' \code{\link{mallet.topic.labels}}
+#' 
+#' Clustering of topics: 
+#' \code{\link{mallet.topic.hclust}}
+#' 
+#' @author 
+#' Maintainer: David Mimno
+#' 
+#' @references 
+#' The model, Latent Dirichlet allocation (LDA):
+#' \cite{David M Blei, Andrew Ng, Michael Jordan. Latent Dirichlet Allocation. J. of Machine Learning Research, 2003.}
+#' 
+#' The Java toolkit: 
+#' \cite{Andrew Kachites McCallum. The Mallet Toolkit. 2002.}
+#' 
+#' Details of the fast sparse Gibbs sampling algorithm:
+#' \cite{Limin Yao, David Mimno, Andrew McCallum. Streaming Inference for Latent Dirichlet Allocation. KDD, 2009.}
+#' 
+#' Hyperparameter optimization:
+#' \cite{Hanna Wallach, David Mimno, Andrew McCallum. Rethinking LDA: Why Priors Matter. NIPS, 2010.}
+#' 
+#' @name mallet
+#' @docType package
+#' @import rJava
+NULL
+
+#' @title 
+#' Create a Mallet topic model trainer
+#' 
+#' @description 
+#' This function creates a java cc.mallet.topics.RTopicModel object that wraps a 
+#' Mallet topic model trainer java object, cc.mallet.topics.ParallelTopicModel. 
+#' Note that you can call any of the methods of this java object as properties. 
+#' In the example below, I make a call directly to the 
+#' \code{topic.model$setAlphaOptimization(20, 50)} java method, 
+#' which passes this update to the model itself.
+#'
+#' @param num.topics
+#' The number of topics to use. If not specified, this defaults to 10.
+#' @param alpha.sum
+#' This is the magnitude of the Dirichlet prior over the topic distribution of a document. 
+#' The default value is 5.0. With 10 topics, this setting leads to a Dirichlet with 
+#' parameter \eqn{\alpha_k = 0.5}. You can intuitively think of this parameter as a 
+#' number of "pseudo-words", divided evenly between all topics, that are present in 
+#' every document no matter how the other words are allocated to topics. This is an 
+#' initial value, which may be changed during training if hyperparameter 
+#' optimization is active.
+#' @param beta
+#' This is the per-word weight of the Dirichlet prior over topic-word distributions. 
+#' The magnitude of the distribution (the sum over all words of this parameter) is 
+#' determined by the number of words in the vocabulary. Again, this value may change
+#' due to hyperparameter optimization.
+#'
+#' @examples 
+#' \dontrun{
+#' library(mallet)
+#' 
+#' ## Create a wrapper for the data with three elements, one for each column.
+#' ##  R does some type inference, and will guess wrong, so give it hints with "colClasses".
+#' ##  Note that "id" and "text" are special fields -- mallet will look there for input.
+#' ##  "class" is arbitrary. We will only use that field on the R side.
+#' documents <- read.table("nips_cvpr.txt", col.names=c("id", "class", "text"),
+#'                         colClasses=rep("character", 3), sep="\t", quote="")
+#'
+#' ## Create a mallet instance list object. Right now I have to specify the stoplist
+#' ##  as a file, I can't pass in a list from R.
+#' ## This function has a few hidden options (whether to lowercase, how we 
+#' ##   define a token). See ?mallet.import for details.
+#' mallet.instances <- mallet.import(documents$id, documents$text, "en.txt",
+#'                                   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#'
+#' ## Create a topic trainer object.
+#' topic.model <- MalletLDA(num.topics=20)
+#' 
+#' ## Load our documents. We could also pass in the filename of a 
+#' ##  saved instance list file that we build from the command-line tools.
+#' topic.model$loadDocuments(mallet.instances)
+#' 
+#' ## Get the vocabulary, and some statistics about word frequencies.
+#' ##  These may be useful in further curating the stopword list.
+#' vocabulary <- topic.model$getVocabulary()
+#' word.freqs <- mallet.word.freqs(topic.model)
+#' 
+#' ## Optimize hyperparameters every 20 iterations, 
+#' ##  after 50 burn-in iterations.
+#' topic.model$setAlphaOptimization(20, 50)
+#' 
+#' ## Now train a model. Note that hyperparameter optimization is on, by default.
+#' ##  We can specify the number of iterations. Here we'll use a large-ish round number.
+#' topic.model$train(200)
+#' 
+#' ## NEW: run through a few iterations where we pick the best topic for each token, 
+#' ##  rather than sampling from the posterior distribution.
+#' topic.model$maximize(10)
+#' 
+#' ## Get the probability of topics in documents and the probability of words in topics.
+#' ## By default, these functions return raw word counts. Here we want probabilities, 
+#' ##  so we normalize, and add "smoothing" so that nothing has exactly 0 probability.
+#' doc.topics <- mallet.doc.topics(topic.model, smoothed=T, normalized=T)
+#' topic.words <- mallet.topic.words(topic.model, smoothed=T, normalized=T)
+#' 
+#' ## What are the top words in topic 7?
+#' ##  Notice that R indexes from 1, so this will be the topic that mallet called topic 6.
+#' mallet.top.words(topic.model, topic.words[7,])
+#' 
+#' ## Show the first few documents with at least 5% topic 7 and 5% topic 10
+#' head(documents[ doc.topics[7,] > 0.05 & doc.topics[10,] > 0.05, ])
+#' 
+#' ## How do topics differ across different sub-corpora?
+#' nips.topic.words <- mallet.subset.topic.words(topic.model, documents$class == "NIPS",
+#'                                               smoothed=T, normalized=T)
+#' cvpr.topic.words <- mallet.subset.topic.words(topic.model, documents$class == "CVPR",
+#'                                               smoothed=T, normalized=T)
+#' 
+#' ## How do they compare?
+#' mallet.top.words(topic.model, nips.topic.words[10,])
+#' mallet.top.words(topic.model, cvpr.topic.words[10,])
+#' }
+#' 
+#' @export
 MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) }
 
-mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) { rJava::.jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) }
+
+
+
+#' @title 
+#' Retrieve a matrix of words weights for topics
+#' 
+#' @description 
+#' This function returns a matrix with one row for every topic 
+#' and one column for every word in the vocabulary.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param normalized
+#' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing the 
+#' actual number of words of each type in the topics.
+#' @param smoothed
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+#' \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @export
+mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
+  rJava::.jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) 
+}
+
+
 mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { rJava::.jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) }
 
 mallet.word.freqs <- function(topic.model) {
