@@ -1,4 +1,4 @@
-pxweb
+mallet
 ======
 
 [![Build Status](https://travis-ci.org/mimno/RMallet.svg?branch=master)](https://travis-ci.org/mimno/RMallet)
