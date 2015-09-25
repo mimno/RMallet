@@ -1,22 +1,259 @@
+#' @title 
+#' An R Wrapper for the Mallet Topic Modeling Package
+#' 
+#' @description
+#' This package provides an interface to the Java implementation of latent 
+#' Dirichlet allocation in the Mallet machine learning package. Mallet has many 
+#' functions, this wrapper focuses on the topic modeling sub-package written by 
+#' David Mimno. The package uses the \code{rJava} package to connect to a JVM.
+#' 
+#' @details 
+#' \tabular{ll}{
+#' Package: \tab mallet\cr
+#' Type: \tab Package\cr
+#' Version: \tab 1.0\cr
+#' Date: \tab 2013-08-08\cr
+#' License: \tab MIT\cr
+#' }
+#' 
+#' Create a topic model trainer: 
+#' \code{\link{MalletLDA}}
+#' 
+#' Load documents from disk and import them:
+#' \code{\link{mallet.read.dir}} 
+#' \code{\link{mallet.import}}
+#' 
+#' Get info about word frequencies: 
+#' \code{\link{mallet.word.freqs}}
+#' 
+#' Get trained model parameters:
+#' \code{\link{mallet.doc.topics}}
+#' \code{\link{mallet.topic.words}}
+#' \code{\link{mallet.subset.topic.words}}
+#' 
+#' Reports on topic words:
+#' \code{\link{mallet.top.words}}
+#' \code{\link{mallet.topic.labels}}
+#' 
+#' Clustering of topics: 
+#' \code{\link{mallet.topic.hclust}}
+#' 
+#' @author 
+#' Maintainer: David Mimno
+#' 
+#' @references 
+#' The model, Latent Dirichlet allocation (LDA):
+#' \cite{David M Blei, Andrew Ng, Michael Jordan. Latent Dirichlet Allocation. J. of Machine Learning Research, 2003.}
+#' 
+#' The Java toolkit: 
+#' \cite{Andrew Kachites McCallum. The Mallet Toolkit. 2002.}
+#' 
+#' Details of the fast sparse Gibbs sampling algorithm:
+#' \cite{Limin Yao, David Mimno, Andrew McCallum. Streaming Inference for Latent Dirichlet Allocation. KDD, 2009.}
+#' 
+#' Hyperparameter optimization:
+#' \cite{Hanna Wallach, David Mimno, Andrew McCallum. Rethinking LDA: Why Priors Matter. NIPS, 2010.}
+#' 
+#' @name mallet-package
+#' @docType package
+#' @import rJava
+NULL
+
+#' @title 
+#' Create a Mallet topic model trainer
+#' 
+#' @description 
+#' This function creates a java cc.mallet.topics.RTopicModel object that wraps a 
+#' Mallet topic model trainer java object, cc.mallet.topics.ParallelTopicModel. 
+#' Note that you can call any of the methods of this java object as properties. 
+#' In the example below, I make a call directly to the 
+#' \code{topic.model$setAlphaOptimization(20, 50)} java method, 
+#' which passes this update to the model itself.
+#'
+#' @param num.topics
+#' The number of topics to use. If not specified, this defaults to 10.
+#' @param alpha.sum
+#' This is the magnitude of the Dirichlet prior over the topic distribution of a document. 
+#' The default value is 5.0. With 10 topics, this setting leads to a Dirichlet with 
+#' parameter \eqn{\alpha_k = 0.5}. You can intuitively think of this parameter as a 
+#' number of "pseudo-words", divided evenly between all topics, that are present in 
+#' every document no matter how the other words are allocated to topics. This is an 
+#' initial value, which may be changed during training if hyperparameter 
+#' optimization is active.
+#' @param beta
+#' This is the per-word weight of the Dirichlet prior over topic-word distributions. 
+#' The magnitude of the distribution (the sum over all words of this parameter) is 
+#' determined by the number of words in the vocabulary. Again, this value may change
+#' due to hyperparameter optimization.
+#'
+#' 
+#' @export
 MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) }
 
-mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) { rJava::.jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) }
-mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { rJava::.jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T) }
 
+
+
+#' @title 
+#' Retrieve a matrix of words weights for topics
+#' 
+#' @description 
+#' This function returns a matrix with one row for every topic 
+#' and one column for every word in the vocabulary.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param normalized
+#' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing the 
+#' actual number of words of each type in the topics.
+#' @param smoothed
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+#' \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @export
+mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
+  rJava::.jevalArray(topic.model$getTopicWords(normalized, smoothed), simplify=T) 
+}
+
+
+#' @title 
+#' Retrieve a matrix of topic weights for every document
+#' 
+#' @description 
+#' This function returns a matrix with one row for every document and one 
+#' column for every topic.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param normalized
+#' If \code{TRUE}, normalize the rows so that each document sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing the 
+#' actual number of words of each topic in the documents.
+#' @param smoothed
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+#' \code{alpha.sum} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @export
+mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) { 
+  rJava::.jevalArray(topic.model$getDocumentTopics(normalized, smoothed), simplify=T)
+}
+
+
+#' @title 
+#' Descriptive statistics of word frequencies
+#' 
+#' @description 
+#' This method returns a data frame with one row for each unique vocabulary word, 
+#' and three columns: the word as a \code{character} value, the total number of 
+#' tokens of that word type, and the total number of documents that contain that 
+#' word at least once. This information can be useful in identifying candidate 
+#' stopwords.
+#' 
+#' @param topic.model
+#' A Mallet topic trainer returned by \code{MalletLDA}
+#' 
+#' @seealso 
+#' \code{\link{MalletLDA}}
+#' 
+#' @export
 mallet.word.freqs <- function(topic.model) {
   word.freqs <- rJava::.jevalArray(topic.model$getWordFrequencies(), simplify=T)
   data.frame(words = topic.model$getVocabulary(), term.freq = word.freqs[,1], doc.freq = word.freqs[,2])
 }
 
+
+#' @title 
+#' Estimate topic-word distributions from a sub-corpus
+#' 
+#' @description 
+#' This function returns a matrix of word probabilities for each topic similar to 
+#' \code{\link{mallet.topic.words}}, but estimated from a subset of the documents 
+#' in the corpus. The model assumes that topics are the same no matter where they 
+#' are used, but we know this is often not the case. This function lets us test 
+#' whether some words are used more or less than we expect in a particular set 
+#' of documents.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param subset.docs 
+#' An array of \code{TRUE}/\code{FALSE} values specifying which documents should 
+#' be used and which should be ignored.
+#' @param normalized 
+#' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE}, 
+#' values will be integers (possibly plus the smoothing constant) representing 
+#' the actual number of words of each type in the topics.
+#' @param smoothed 
+#' If \code{TRUE}, add the smoothing parameter for the model (initial value specified 
+#' as \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#' 
+#' @seealso 
+#' \code{\link{mallet.topic.words}}
+#' 
+#' @examples 
+#' \dontrun{
+#' nips.topic.words <- 
+#'   mallet.subset.topic.words(topic.model, documents$class == "NIPS", smoothed=T, normalized=T)
+#' }
+#' 
+#' @export
 mallet.subset.topic.words <- function(topic.model, subset.docs, normalized=FALSE, smoothed=FALSE) {
   rJava::.jevalArray(topic.model$getSubCorpusTopicWords(subset.docs, normalized, smoothed), simplify=T)
 }
 
+
+#' @title 
+#' Get the most probable words and their probabilities for one topic
+#' 
+#' @description 
+#' This function returns a data frame with two columns, one containing the most 
+#' probable words as character values, the second containing the weight assigned 
+#' to that word in the word weights vector you supplied.
+#' 
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param word.weights 
+#' A vector of word weights for one topic, usually a row from the \code{topic.words} 
+#' matrix from \code{mallet.topic.words}.
+#' @param num.top.words
+#' The number of most probable words to return. If not specified, defaults to 10.
+#' 
+#' @export
 mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
   top.indices <- order(word.weights, decreasing=T)[1:num.top.words]
   data.frame(words = topic.model$getVocabulary()[top.indices], weights = word.weights[top.indices], stringsAsFactors=F)
 }
 
+#' @title 
+#' Import text documents into Mallet format
+#' 
+#' @description 
+#' This function takes an array of document IDs and text files (as character strings) 
+#' and converts them into a Mallet instance list.
+#' 
+#' @param id.array
+#' An array of document IDs.
+#' @param text.array
+#' An array of text strings to use as documents. The type of the array must be \code{character}.
+#' @param stoplist.file
+#' The name of a file containing stopwords (words to ignore), one per line. 
+#' If the file is not in the current working directory, you may need to include a full path.
+#' @param preserve.case
+#' By default, the input text is converted to all lowercase
+#' @param token.regexp
+#' A quoted string representing a regular expression that defines a token. The default 
+#' is one or more unicode letter: "[\\\\p\{L\}]+". Note that special characters must 
+#' have double backslashes.
+#' 
+#' @seealso 
+#' \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.
+#' 
+#' @examples 
+#' \dontrun{
+#' mallet.instances <- mallet.import(documents$id, documents$text, "en.txt",
+#'                                   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' }
+#' 
+#' @export
 mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   stoplist.file <- normalizePath(stoplist.file)
   if (class(text.array[1]) != "character") stop("Text field is not a string. Remember to create data frames with stringsAsFactors=F.")
@@ -43,6 +280,36 @@ mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FAL
 # ... This data.frame() has as many rows as there are files in the Dir.
 # The form of this functions return attempts to conform to that
 # ... used by the mallet.import() function, available in the 'mallet' R package
+
+#' @title 
+#' Import documents from a directory into Mallet format
+#' 
+#' @author Dan Bowen
+#' 
+#' @description 
+#'  This function takes a directory path as its only argument and returns a 
+#'  \code{data.frame} with two columns: <id> & <text>,
+#'  which can be passed to the \code{mallet.import} function.
+#'  This \code{data.frame} has as many rows as there are files in the \code{Dir}.
+#' 
+#' @param Dir
+#' The path to a directory containing one document per file.
+#' 
+#' @note 
+#' This function was contributed to RMallet by Dan Bowen. 
+#' 
+#' @seealso 
+#' \code{\link{mallet.import}}
+#' 
+#' @examples 
+#' \dontrun{
+#' documents <- mallet.read.dir(Dir)
+#' mallet.instances <- 
+#'   mallet.import(documents$id, documents$text, "en.txt", 
+#'                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' }
+#' 
+#' @export
 mallet.read.dir <- function(Dir) {
   # get Dir Files (filepaths)
   Files <- file.path(Dir, list.files(Dir))
@@ -61,6 +328,26 @@ mallet.read.dir <- function(Dir) {
 }
 
 ## Get a vector containing short names for all the topics
+
+#' @title 
+#' Get strings containing the most probable words for each topic
+#' 
+#' @description 
+#' This function returns a vector of strings, one for each topic, with the 
+#' most probable words in that topic separated by spaces.
+#'
+#' @param topic.model
+#' The model returned by \code{MalletLDA}
+#' @param topic.words
+#' The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
+#' @param num.top.words
+#' The number of words to include for each topic
+#' 
+#' @seealso 
+#' \code{\link{mallet.topic.words}} produces topic-word weights. 
+#' \code{\link{mallet.top.words}} produces a data frame for a single topic.
+#' 
+#' @export
 mallet.topic.labels <- function(topic.model, topic.words, num.top.words=3) {
   n.topics <- dim(topic.words)[1]
   topics.labels <- rep("", n.topics)
@@ -69,6 +356,36 @@ mallet.topic.labels <- function(topic.model, topic.words, num.top.words=3) {
 }
 
 ## Return a hierarchical clustering of topics.
+
+#' @title 
+#' Return a hierarchical clustering of topics
+#' 
+#' @description 
+#' Returns a hierarchical clustering of topics that can be plotted as a dendrogram. 
+#' There are two ways of measuring topic similarity: topics may contain the some of 
+#' the same words, or the may appear in some of the same documents. The \code{balance} parameter allows you to interpolate between the similarities determined by these two methods.
+#' 
+#' @param doc.topics
+#' A documents by topics matrix of topic probabilities.
+#' @param topic.words
+#' A topics by words matrix of word probabilities.
+#' @param balance
+#' A value between 0.0 (use only document-level similarity) 
+#' and 1.0 (use only word-level similarity).
+#' @param ... 
+#' Further arguments for \code{\link[stats]{hclust}}.
+#' 
+#' @seealso 
+#' This function uses data matrices from \code{\link{mallet.doc.topics}} 
+#' and \code{\link{mallet.topic.words}}
+#' 
+#' @examples 
+#' \dontrun{
+#' topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
+#' plot(mallet.topic.hclust(doc.topics, topic.words, 0.3), labels=topic.labels)
+#' }
+#' 
+#' @export
 mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
   ## transpose and normalize the doc topics
   topic.docs <- t(doc.topics)
@@ -76,6 +393,7 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
 
   hclust(balance * dist(topic.words) + (1.0 - balance) * dist(topic.docs))
 }
+
 
 mallet.save.instances <- function(instances, filename) {
   instances$save(rJava::.jnew("java/io/File", filename))
