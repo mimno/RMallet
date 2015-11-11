@@ -1,6 +1,9 @@
 ## ---- eval=FALSE---------------------------------------------------------
 #  install.packages("mallet")
 
+## ---- eval=FALSE---------------------------------------------------------
+#  options(java.parameters = "-Xmx4g")
+
 ## ------------------------------------------------------------------------
 library(mallet)
 
@@ -73,4 +76,3 @@ other.topic.words <- mallet.subset.topic.words(topic.model,
 ## ------------------------------------------------------------------------
 head(mallet.top.words(topic.model, usa.topic.words[1,]))
 head(mallet.top.words(topic.model, other.topic.words[1,]))
-

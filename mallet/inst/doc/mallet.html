@@ -10,7 +10,7 @@
 
 <meta name="author" content="David Mimno" />
 
-<meta name="date" content="2015-09-24" />
+<meta name="date" content="2015-11-11" />
 
 <title>Introduction to R mallet</title>
 
@@ -54,7 +54,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">Introduction to R mallet</h1>
 <h4 class="author"><em>David Mimno</em></h4>
-<h4 class="date"><em>2015-09-24</em></h4>
+<h4 class="date"><em>2015-11-11</em></h4>
 </div>
 
 
@@ -62,14 +62,18 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2>Installation</h2>
 <p>The <code>mallet</code> R package is available on CRAN. To install, simply use <code>install.packages()</code></p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;mallet&quot;</span>)</code></pre>
-<p>To load the package, simply use <code>library()</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mallet)</code></pre>
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
+<p>Depending of the size of your data it can be so that you need increase the Java virtual machine heap memory to handle larger corpuses. To do this you need to set the <code>Xmx</code>flag to the memory size you want to be allocated. Below is an example of allocating 4 gB.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">java.parameters =</span> <span class="st">&quot;-Xmx4g&quot;</span>)</code></pre>
+<p>To load the package, simply use <code>library()</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mallet)</code></pre>
+<pre><code>## Loading required package: rJava</code></pre>
 <p>We start out by using the example data from the <code>tm</code> package.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tm)
-reut21578 &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tm)</code></pre>
+<pre><code>## Loading required package: NLP</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">reut21578 &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)
 reuters &lt;-<span class="st"> </span><span class="kw">VCorpus</span>(<span class="kw">DirSource</span>(reut21578), <span class="dt">readerControl =</span> <span class="kw">list</span>(<span class="dt">reader =</span> readReut21578XMLasPlain))
 reuters_text_vector &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(reuters, as.character))</code></pre>
 <p>We can also use the stopword file from the <code>tm</code> package.</p>
