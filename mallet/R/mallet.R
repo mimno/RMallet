@@ -256,6 +256,7 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 #' @export
 mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   stoplist.file <- normalizePath(stoplist.file)
+  id.array <- as.character(id.array)
   if (class(text.array[1]) != "character") stop("Text field is not a string. Remember to create data frames with stringsAsFactors=F.")
   token.pattern <- rJava::J("java/util/regex/Pattern")$compile(token.regexp)
   pipe.list <- rJava::.jnew("java/util/ArrayList")
