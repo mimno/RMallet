@@ -16,7 +16,8 @@ Suggests:
     knitr,
     rmarkdown,
     tm,
-    testthat
+    testthat,
+    XML
 VignetteBuilder: rmarkdown,
     knitr
 RoxygenNote: 5.0.1
