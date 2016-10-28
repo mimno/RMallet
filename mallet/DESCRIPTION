@@ -5,17 +5,18 @@ Version: 1.1.2
 Date: 2015-09-24
 Author: David Mimno
 Maintainer: David Mimno <mimno@cornell.edu>
-Description: This package allows you to train topic models in mallet and load results directly into R.
+Description: This package allows you to train topic models in mallet and load
+    results directly into R.
 License: MIT + file LICENSE
 SystemRequirements: java
-Depends: 
+Imports:
     rJava,
     checkmate
-Suggests: 
-    knitr, 
+Suggests:
+    knitr,
     rmarkdown,
     tm,
     testthat
-VignetteBuilder: 
-    rmarkdown,
+VignetteBuilder: rmarkdown,
     knitr
+RoxygenNote: 5.0.1
