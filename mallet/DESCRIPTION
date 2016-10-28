@@ -16,6 +16,8 @@ Suggests:
     knitr,
     rmarkdown,
     tm,
+    stringr,
+    dplyr,
     testthat,
     XML
 VignetteBuilder: rmarkdown,
