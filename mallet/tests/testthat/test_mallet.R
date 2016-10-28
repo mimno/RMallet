@@ -1,5 +1,6 @@
 context("mallet")
 library(tm)
+library(XML)
 reut21578 <- system.file("texts", "crude", package = "tm")
 reuters <- VCorpus(DirSource(reut21578), readerControl = list(reader = readReut21578XMLasPlain))
 reuters_text_vector <- unlist(lapply(reuters, as.character))
