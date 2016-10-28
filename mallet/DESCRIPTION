@@ -13,6 +13,9 @@ Depends:
     checkmate
 Suggests: 
     knitr, 
+    rmarkdown,
     tm,
     testthat
-VignetteBuilder: knitr
+VignetteBuilder: 
+    rmarkdown,
+    knitr
