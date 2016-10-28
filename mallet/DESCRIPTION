@@ -8,8 +8,11 @@ Maintainer: David Mimno <mimno@cornell.edu>
 Description: This package allows you to train topic models in mallet and load results directly into R.
 License: MIT + file LICENSE
 SystemRequirements: java
-Depends: rJava
-Suggests: knitr, 
+Depends: 
+    rJava,
+    checkmate
+Suggests: 
+    knitr, 
     tm,
     testthat
 VignetteBuilder: knitr

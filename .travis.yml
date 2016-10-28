@@ -7,6 +7,9 @@ r:
 sudo: required
 cache: packages
 
+before_install:
+  - cd mallet
+
 apt_packages:
  - r-cran-rjava
 
