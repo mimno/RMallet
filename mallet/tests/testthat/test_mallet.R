@@ -6,13 +6,12 @@ reuters_text_vector <- unlist(lapply(reuters, as.character))
 stopwords_en <- system.file("stopwords/english.dat", package = "tm")
 
 test_that(desc="mallet.import",{
-  expect_that({
+  expect_silent({
     mallet.instances <- mallet.import(id.array = as.character(1:length(reuters_text_vector)), 
                                       text.array = reuters_text_vector, 
                                       stoplist.file = stopwords_en,
                                       token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
-  },condition = not(throws_error())
-  )
+  })
   expect_is(mallet.instances, "jobjRef")
 })
 
