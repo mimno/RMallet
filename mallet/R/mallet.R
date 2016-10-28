@@ -59,6 +59,21 @@
 #' @import rJava
 NULL
 
+#' State of the Union Adresses.
+#'
+#' A dataset containing State of the Union Adresses by paragraph from 1790 to 2009.
+#'
+#' @format A data frame with 6359 rows and 3 variables:
+#' \describe{
+#'   \item{year}{Year of the adress.}
+#'   \item{paragraph}{The paragraph of the address.}
+#'   \item{text}{The address content.}
+#' }
+#' @source \url{https://en.wikipedia.org/wiki/State_of_the_Union}
+"sotu"
+
+
+
 #' @title 
 #' Create a Mallet topic model trainer
 #' 
