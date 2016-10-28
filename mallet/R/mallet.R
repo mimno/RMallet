@@ -392,7 +392,7 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
   topic.docs <- t(doc.topics)
   topic.docs <- topic.docs / rowSums(topic.docs)
 
-  hclust(balance * dist(topic.words) + (1.0 - balance) * dist(topic.docs))
+  stats::hclust(balance * stats::dist(topic.words) + (1.0 - balance) * stats::dist(topic.docs))
 }
 
 
