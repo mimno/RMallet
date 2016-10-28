@@ -7,7 +7,9 @@ r:
 sudo: required
 cache: packages
 
-r_packages: XML
+install:
+  - Rscript -e 'install.packages("tm", repos = "http://cran.rstudio.com", dependencies = TRUE)'
+  - Rscript -e 'install.packages("XML", repos = "http://cran.rstudio.com", dependencies = TRUE)'
 
 before_install:
   - cd mallet
