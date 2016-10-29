@@ -4,7 +4,7 @@
 \name{sotu}
 \alias{sotu}
 \title{State of the Union Adresses.}
-\format{A \code{data.frame} with 6359 rows and 3 variables:
+\format{A \code{\link[tibble]{tibble}} \code{data.frame} with 6359 rows and 3 variables:
 \describe{
   \item{year}{Year of the adress.}
   \item{paragraph}{The paragraph of the address.}
