@@ -19,6 +19,7 @@ Suggests:
     rmarkdown,
     dplyr,
     testthat
-VignetteBuilder: rmarkdown,
+VignetteBuilder: 
+    rmarkdown,
     knitr
 RoxygenNote: 5.0.1
