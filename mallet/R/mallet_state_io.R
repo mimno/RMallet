@@ -13,7 +13,7 @@
 save.mallet.state <- function(topic.model, state.file){
   checkmate::assert_path_for_output(state.file)
   checkmate::assert_class(topic.model, "jobjRef")
-  checkmate::assert_string(capture.output(print(topic.model)), "Java-Object{cc.mallet.topics.RTopicModel@[a-zA-z0-9]+}")
+  checkmate::assert_string(utils::capture.output(print(topic.model)), "Java-Object{cc.mallet.topics.RTopicModel@[a-zA-z0-9]+}")
 
   topic.model$writeState(state.file)
 }
@@ -31,7 +31,7 @@ save.mallet.state <- function(topic.model, state.file){
 load.mallet.state <- function(topic.model, state.file){
   checkmate::assert_file_exists(state.file)
   checkmate::assert_class(topic.model, "jobjRef")
-  checkmate::assert_string(capture.output(print(topic.model)), "Java-Object{cc.mallet.topics.RTopicModel@[a-zA-z0-9]+}")
+  checkmate::assert_string(utils::capture.output(print(topic.model)), "Java-Object{cc.mallet.topics.RTopicModel@[a-zA-z0-9]+}")
   
   jFile <- rJava::.jnew("java/io/File", state.file)
   topic.model$initializeFromState(jFile)

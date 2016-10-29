@@ -27,13 +27,14 @@ This function takes an array of document IDs and text files (as character string
 and converts them into a Mallet instance list.
 }
 \examples{
+\dontrun{
 data(sotu)
 stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
 mallet.instances <- 
   mallet.import(text.array = sotu[["text"]], 
   stoplist = stopwords_en,
   token.regexp = "\\\\\\\\p{L}[\\\\\\\\p{L}\\\\\\\\p{P}]+\\\\\\\\p{L}")
-
+}
 }
 \seealso{
 \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.

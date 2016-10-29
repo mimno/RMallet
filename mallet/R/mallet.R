@@ -264,13 +264,14 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 #' \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.
 #' 
 #' @examples 
+#' \dontrun{
 #' data(sotu)
 #' stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
 #' mallet.instances <- 
 #'   mallet.import(text.array = sotu[["text"]], 
 #'   stoplist = stopwords_en,
 #'   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
-#' 
+#' }
 #' @export
 mallet.import <- function(id.array = NULL, text.array, stoplist = "", preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   checkmate::assert_character(id.array, null.ok = TRUE, len = length(text.array))
