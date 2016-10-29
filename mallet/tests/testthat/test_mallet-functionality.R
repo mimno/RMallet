@@ -26,8 +26,8 @@ test_that(desc="mallet.word.freqs",{
     word.freqs <- mallet.word.freqs(topic.model)
   )
   expect_equal(as.character(word.freqs[1:3,1]), c("fellow-citizens", "senate", "house"))
-  expect_equal(word.freqs[1:3,2], c(19, 572, 485))
-  expect_equal(word.freqs[1:3,3], c(16, 284, 242))
+  expect_equal(word.freqs[1:3,2], c(16, 572, 485))
+  expect_equal(word.freqs[1:3,3], c(16, 514, 435))
 })
 
 
@@ -56,14 +56,14 @@ test_that(desc="Get parameter matrices",{
     doc.topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
   )
   
-  expect_equal(dim(doc.topics), c(6359,10))
-  expect_equal(object = rowSums(doc.topics), expected = rep(1,6359), tolerance = .00000000001, scale = 1)
+  expect_equal(dim(doc.topics), c(19254,10))
+  expect_equal(object = rowSums(doc.topics), expected = rep(1,19254), tolerance = .00000000001, scale = 1)
   
   expect_silent(
     topic.words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
   )
   
-  expect_equal(dim(topic.words), c(10, 26336))
+  expect_equal(dim(topic.words), c(10, 26311))
   expect_equal(object = rowSums(topic.words), expected = rep(1,10), tolerance = .00000000001, scale = 1)
   
 })
@@ -90,8 +90,8 @@ test_that(desc="mallet.subset",{
                                                    normalized=TRUE)
   })
   
-  expect_equal(dim(modern.topic.words), c(10, 26336))
-  expect_equal(dim(not.modern.topic.words), c(10, 26336))
+  expect_equal(dim(modern.topic.words), c(10, 26311))
+  expect_equal(dim(not.modern.topic.words), c(10, 26311))
   expect_true(any(modern.topic.words != not.modern.topic.words))
 })
 
