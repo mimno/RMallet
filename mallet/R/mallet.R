@@ -430,10 +430,12 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
 }
 
 
-mallet.save.instances <- function(instances, filename) {
+
+save.mallet.instances <- function(instances, filename) {
   instances$save(rJava::.jnew("java/io/File", filename))
 }
 
-mallet.load <- function(filename) {
+
+load.mallet.instances <- function(filename) {
   rJava::J("cc.mallet.types.InstanceList")$load(rJava::.jnew("java/io/File", filename))
 }
