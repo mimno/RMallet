@@ -1,8 +1,8 @@
 Package: mallet
 Type: Package
 Title: A wrapper around the Java machine learning tool MALLET
-Version: 1.1.4
-Date: 2015-10-28
+Version: 1.2.0
+Date: 2015-10-29
 Author: David Mimno, Måns Magnusson
 Maintainer: David Mimno <mimno@cornell.edu>
 Description: This package allows you to train topic models in mallet and load
