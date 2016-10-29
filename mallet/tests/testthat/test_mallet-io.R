@@ -46,4 +46,6 @@ test_that(desc="load.mallet",{
   skip("Currently a bug in mallet?")
   expect_equal(new.counts.after.load, old.doc.topics.counts)
   expect_true(any(new.counts.after.load != old.doc.topics.counts))
+  expect_equal(680947, sum(old.doc.topics.counts))
+  expect_equal(680947, sum(new.counts.after.load))
 })
