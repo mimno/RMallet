@@ -47,3 +47,25 @@ test_that(desc="Train model",{
 })
 
 
+test_that(desc="Train model 2 (with stopwords)",{
+  
+  expect_silent(
+    sotu.instances <- 
+      mallet.import(text.array = sotu[["text"]])
+  )
+  
+  expect_silent(
+    topic.model <- MalletLDA(num.topics=5, alpha.sum = 1, beta = 0.1)
+  )
+  
+  expect_is(topic.model, "jobjRef")
+  
+  expect_silent(
+    topic.model$loadDocuments(sotu.instances)
+  )
+  
+  expect_silent(
+    topic.model$train(20)
+  )
+})
+
