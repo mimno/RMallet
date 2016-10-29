@@ -5,32 +5,36 @@
 library(mallet)
 
 ## ------------------------------------------------------------------------
-library(tm)
-reut21578 <- system.file("texts", "crude", package = "tm")
-reuters <- VCorpus(DirSource(reut21578), readerControl = list(reader = readReut21578XMLasPlain))
-reuters_text_vector <- unlist(lapply(reuters, as.character))
+library(dplyr)
+data(sotu)
+sotu[["text"]][1:2]
 
 ## ------------------------------------------------------------------------
-stopwords_en <- system.file("stopwords/english.dat", package = "tm")
+dir(system.file("stoplists/", package = "mallet"))
+stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
 
 ## ------------------------------------------------------------------------
-mallet.instances <- mallet.import(id.array = as.character(1:length(reuters_text_vector)), 
-                                  text.array = reuters_text_vector, 
-                                  stoplist.file = stopwords_en,
-                                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+sotu.instances <- 
+  mallet.import(id.array = row.names(sotu), 
+                text.array = sotu[["text"]], 
+                stoplist = stopwords_en,
+                token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
 
 ## ------------------------------------------------------------------------
-topic.model <- MalletLDA(num.topics=5, alpha.sum = 1, beta = 0.1)
+sotu.instances.short <- 
+  mallet.import(text.array = sotu[["text"]])
 
 ## ------------------------------------------------------------------------
-topic.model$loadDocuments(mallet.instances)
+stop_vector <- readLines(stopwords_en)
+sotu.instances.short <- 
+  mallet.import(text.array = sotu[["text"]], 
+                stoplist = stop_vector)
 
 ## ------------------------------------------------------------------------
-vocabulary <- topic.model$getVocabulary()
-head(vocabulary)
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
 
-word.freqs <- mallet.word.freqs(topic.model)
-head(word.freqs)
+## ------------------------------------------------------------------------
+topic.model$loadDocuments(sotu.instances)
 
 ## ------------------------------------------------------------------------
 vocabulary <- topic.model$getVocabulary()
@@ -56,21 +60,22 @@ topic.words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
 mallet.top.words(topic.model, word.weights = topic.words[2,], num.top.words = 5)
 
 ## ------------------------------------------------------------------------
-inspect(reuters[doc.topics[,1] > 0.05][1])
+sotu[["text"]][doc.topics[,2] > 0.05][1]
 
 ## ------------------------------------------------------------------------
-usa_articles <- unlist(meta(reuters, "places")) == "usa"
-
-usa.topic.words <- mallet.subset.topic.words(topic.model, 
-                                              subset.docs = usa_articles,
-                                              smoothed=TRUE, 
-                                              normalized=TRUE)
-other.topic.words <- mallet.subset.topic.words(topic.model, 
-                                               subset.docs = !usa_articles,
-                                               smoothed=TRUE, 
-                                               normalized=TRUE)
+state_file <- file.path(tempdir(), "temp_mallet_state.gz")
+save.mallet.state(topic.model = topic.model, state.file = state_file)
 
 ## ------------------------------------------------------------------------
-head(mallet.top.words(topic.model, usa.topic.words[1,]))
-head(mallet.top.words(topic.model, other.topic.words[1,]))
+doc.topics.counts <- mallet.doc.topics(topic.model, smoothed=FALSE, normalized=FALSE)
+
+rm(topic.model)
+
+## ------------------------------------------------------------------------
+new.topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+new.topic.model$loadDocuments(sotu.instances)
+load.mallet.state(topic.model = new.topic.model, state.file = state_file)
+
+doc.topics.counts[1:3, 1:10]
+mallet.doc.topics(new.topic.model, smoothed=FALSE, normalized=FALSE)[1:3, 1:10]
 

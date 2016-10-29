@@ -10,7 +10,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="David Mimno" />
+<meta name="author" content="David Mimno, Måns Magnusson" />
 
 <meta name="date" content="2016-10-28" />
 
@@ -69,7 +69,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Introduction to R mallet</h1>
-<h4 class="author"><em>David Mimno</em></h4>
+<h4 class="author"><em>David Mimno, Måns Magnusson</em></h4>
 <h4 class="date"><em>2016-10-28</em></h4>
 
 
@@ -83,103 +83,94 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
-<p>We start out by using the example data from the <code>tm</code> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tm)
-reut21578 &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)
-reuters &lt;-<span class="st"> </span><span class="kw">VCorpus</span>(<span class="kw">DirSource</span>(reut21578), <span class="dt">readerControl =</span> <span class="kw">list</span>(<span class="dt">reader =</span> readReut21578XMLasPlain))
-reuters_text_vector &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(reuters, as.character))</code></pre></div>
-<p>We can also use the stopword file from the <code>tm</code> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stopwords_en &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;stopwords/english.dat&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)</code></pre></div>
-<p>Create a mallet instance list object. Right now I have to specify the stoplist as a file, I can’t pass in a list from R. This function has a few hidden options (whether to lowercase, how we define a token). See <code>?mallet.import</code> for details.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mallet.instances &lt;-<span class="st"> </span><span class="kw">mallet.import</span>(<span class="dt">id.array =</span> <span class="kw">as.character</span>(<span class="dv">1</span>:<span class="kw">length</span>(reuters_text_vector)), 
-                                  <span class="dt">text.array =</span> reuters_text_vector, 
-                                  <span class="dt">stoplist.file =</span> stopwords_en,
-                                  <span class="dt">token.regexp =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">p{L}[</span><span class="ch">\\</span><span class="st">p{L}</span><span class="ch">\\</span><span class="st">p{P}]+</span><span class="ch">\\</span><span class="st">p{L}&quot;</span>)</code></pre></div>
-<p>Create a topic trainer object.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model &lt;-<span class="st"> </span><span class="kw">MalletLDA</span>(<span class="dt">num.topics=</span><span class="dv">5</span>, <span class="dt">alpha.sum =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="fl">0.1</span>)</code></pre></div>
+<p>We start out by using the example data set of the State of the Union adresses from 1790 to 2009.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
+<span class="kw">data</span>(sotu)
+sotu[[<span class="st">&quot;text&quot;</span>]][<span class="dv">1</span>:<span class="dv">2</span>]</code></pre></div>
+<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;                                                                                                                                                                                                                                    
+## [2] &quot;In meeting you again I feel much satisfaction in being able to repeat my  congratulations on the favorable prospects which continue to distinguish  our public affairs. The abundant fruits of another year have blessed our  country with plenty and with the means of a flourishing commerce.  &quot;</code></pre>
+<p>Mallet comes with five different stop list files.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir</span>(<span class="kw">system.file</span>(<span class="st">&quot;stoplists/&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;mallet&quot;</span>))</code></pre></div>
+<pre><code>## [1] &quot;de.txt&quot; &quot;en.txt&quot; &quot;fi.txt&quot; &quot;fr.txt&quot; &quot;jp.txt&quot; &quot;README&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stopwords_en &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;stoplists/en.txt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;mallet&quot;</span>)</code></pre></div>
+<p>As a first step we need to create a LDA trainer object and supply the trainer with documents. We start out by creating a mallet instance list object.</p>
+<p>This function has a few extra options (whether to lowercase, how we define a token). See <code>?mallet.import</code> for details.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sotu.instances &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">mallet.import</span>(<span class="dt">id.array =</span> <span class="kw">row.names</span>(sotu), 
+                <span class="dt">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], 
+                <span class="dt">stoplist =</span> stopwords_en,
+                <span class="dt">token.regexp =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">p{L}[</span><span class="ch">\\</span><span class="st">p{L}</span><span class="ch">\\</span><span class="st">p{P}]+</span><span class="ch">\\</span><span class="st">p{L}&quot;</span>)</code></pre></div>
+<p>If the data is already cleaned and we just want to use the index of <code>text.array</code> we can simply just supply the <code>text.array</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sotu.instances.short &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">mallet.import</span>(<span class="dt">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]])</code></pre></div>
+<p>It is also possible to supply stop words as a character vector.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stop_vector &lt;-<span class="st"> </span><span class="kw">readLines</span>(stopwords_en)
+sotu.instances.short &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">mallet.import</span>(<span class="dt">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], 
+                <span class="dt">stoplist =</span> stop_vector)</code></pre></div>
+<p>To fit a model we first need to create a topic trainer object.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model &lt;-<span class="st"> </span><span class="kw">MalletLDA</span>(<span class="dt">num.topics=</span><span class="dv">10</span>, <span class="dt">alpha.sum =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="fl">0.1</span>)</code></pre></div>
 <p>Load our documents. We could also pass in the filename of a saved instance list file that we build from the command-line tools.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">loadDocuments</span>(mallet.instances)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">loadDocuments</span>(sotu.instances)</code></pre></div>
 <p>Get the vocabulary, and some statistics about word frequencies. These may be useful in further curating the stopword list.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vocabulary &lt;-<span class="st"> </span>topic.model$<span class="kw">getVocabulary</span>()
 <span class="kw">head</span>(vocabulary)</code></pre></div>
-<pre><code>## [1] &quot;diamond&quot;   &quot;shamrock&quot;  &quot;corp&quot;      &quot;said&quot;      &quot;effective&quot; &quot;today&quot;</code></pre>
+<pre><code>## [1] &quot;fellow-citizens&quot; &quot;senate&quot;          &quot;house&quot;           &quot;representatives&quot;
+## [5] &quot;meeting&quot;         &quot;feel&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">word.freqs &lt;-<span class="st"> </span><span class="kw">mallet.word.freqs</span>(topic.model)
 <span class="kw">head</span>(word.freqs)</code></pre></div>
-<pre><code>##       words term.freq doc.freq
-## 1   diamond         0        0
-## 2  shamrock         1        1
-## 3      corp         4        2
-## 4      said        73       20
-## 5 effective         4        4
-## 6     today         8        7</code></pre>
-<p>Get the vocabulary, and some statistics about word frequencies. These may be useful in further curating the stopword list.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vocabulary &lt;-<span class="st"> </span>topic.model$<span class="kw">getVocabulary</span>()
-<span class="kw">head</span>(vocabulary)</code></pre></div>
-<pre><code>## [1] &quot;diamond&quot;   &quot;shamrock&quot;  &quot;corp&quot;      &quot;said&quot;      &quot;effective&quot; &quot;today&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">word.freqs &lt;-<span class="st"> </span><span class="kw">mallet.word.freqs</span>(topic.model)
-<span class="kw">head</span>(word.freqs)</code></pre></div>
-<pre><code>##       words term.freq doc.freq
-## 1   diamond         0        0
-## 2  shamrock         1        1
-## 3      corp         4        2
-## 4      said        73       20
-## 5 effective         4        4
-## 6     today         8        7</code></pre>
-<p>Optimize hyperparameters every 20 iterations, after 50 burn-in iterations.</p>
+<pre><code>##             words term.freq doc.freq
+## 1 fellow-citizens        19       16
+## 2          senate       572      284
+## 3           house       485      242
+## 4 representatives       502      248
+## 5         meeting       198      122
+## 6            feel       192      131</code></pre>
+<p>Optimize hyperparameters ( and ) every 20 iterations, after 50 burn-in iterations.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</code></pre></div>
 <p>Now train a model. Note that hyperparameter optimization is on, by default. We can specify the number of iterations. Here we’ll use a large-ish round number.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">train</span>(<span class="dv">200</span>)</code></pre></div>
-<p><strong>NEW</strong> Run through a few iterations where we pick the best topic for each token, rather than sampling from the posterior distribution.</p>
+<p>We can also run through a few iterations where we pick the best topic for each token, rather than sampling from the posterior distribution.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">maximize</span>(<span class="dv">10</span>)</code></pre></div>
-<p>Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities,so we normalize, and add “smoothing” so that nothing has exactly 0 probability.</p>
+<p>Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities, so we normalize, and add “smoothing” so that nothing has exactly 0 probability.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">doc.topics &lt;-<span class="st"> </span><span class="kw">mallet.doc.topics</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)
 topic.words &lt;-<span class="st"> </span><span class="kw">mallet.topic.words</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre></div>
 <p>What are the top words in topic 2? Notice that R indexes from 1 and Java from 0, so this will be the topic that mallet called topic 1.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mallet.top.words</span>(topic.model, <span class="dt">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="dt">num.top.words =</span> <span class="dv">5</span>)</code></pre></div>
 <pre><code>##        words    weights
-## 1    billion 0.01551584
-## 2       said 0.01384520
-## 3        oil 0.01384520
-## 4        pct 0.01050391
-## 5 government 0.01050391</code></pre>
-<p>Show the first document with at least 5% tokens belonging to topic 1.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect</span>(reuters[doc.topics[,<span class="dv">1</span>] &gt;<span class="st"> </span><span class="fl">0.05</span>][<span class="dv">1</span>])</code></pre></div>
-<pre><code>## &lt;&lt;VCorpus&gt;&gt;
-## Metadata:  corpus specific: 0, document level (indexed): 0
-## Content:  documents: 1
-## 
-## [[1]]
-## &lt;&lt;PlainTextDocument&gt;&gt;
-## Metadata:  16
-## Content:  chars: 2634</code></pre>
-<p>How do topics differ across different sub-corpora?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">usa_articles &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">meta</span>(reuters, <span class="st">&quot;places&quot;</span>)) ==<span class="st"> &quot;usa&quot;</span>
+## 1   congress 0.04345107
+## 2       made 0.02189649
+## 3 department 0.01623770
+## 4    subject 0.01606708
+## 5  attention 0.01323769</code></pre>
+<p>Show the first document with at least 5% tokens belonging to topic 2.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sotu[[<span class="st">&quot;text&quot;</span>]][doc.topics[,<span class="dv">2</span>] &gt;<span class="st"> </span><span class="fl">0.05</span>][<span class="dv">1</span>]</code></pre></div>
+<pre><code>## [1] &quot;In conformity to the powers vested in me by acts of the last session, a  loan of 3,000,000 florins, toward which some provisional measures had  previously taken place, has been completed in Holland. As well the celerity  with which it has been filled as the nature of the terms (considering the  more than ordinary demand for borrowing created by the situation of Europe)  give a reasonable hope that the further execution of those powers may  proceed with advantage and success. The Secretary of the Treasury has my  directions to communicate such further particulars as may be requisite for  more precise information.  &quot;</code></pre>
+</div>
+<div id="save-and-load-topic-states" class="section level2">
+<h2>Save and load topic states</h2>
+<p>We can also store our current topic model state to use it for postprocessing. We can store the state file either as a txt file or a compressed gzip file.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">state_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;temp_mallet_state.gz&quot;</span>)
+<span class="kw">save.mallet.state</span>(<span class="dt">topic.model =</span> topic.model, <span class="dt">state.file =</span> state_file)</code></pre></div>
+<p>We also store the topic counts per document and then remove the old model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">doc.topics.counts &lt;-<span class="st"> </span><span class="kw">mallet.doc.topics</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">FALSE</span>, <span class="dt">normalized=</span><span class="ot">FALSE</span>)
 
-usa.topic.words &lt;-<span class="st"> </span><span class="kw">mallet.subset.topic.words</span>(topic.model, 
-                                              <span class="dt">subset.docs =</span> usa_articles,
-                                              <span class="dt">smoothed=</span><span class="ot">TRUE</span>, 
-                                              <span class="dt">normalized=</span><span class="ot">TRUE</span>)
-other.topic.words &lt;-<span class="st"> </span><span class="kw">mallet.subset.topic.words</span>(topic.model, 
-                                               <span class="dt">subset.docs =</span> !usa_articles,
-                                               <span class="dt">smoothed=</span><span class="ot">TRUE</span>, 
-                                               <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre></div>
-<p>How do they compare?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">mallet.top.words</span>(topic.model, usa.topic.words[<span class="dv">1</span>,]))</code></pre></div>
-<pre><code>##    words    weights
-## 1   opec 0.03614894
-## 2    oil 0.03342839
-## 3   said 0.03070784
-## 4 prices 0.01438452
-## 5    mln 0.01166397
-## 6    bpd 0.01166397</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">mallet.top.words</span>(topic.model, other.topic.words[<span class="dv">1</span>,]))</code></pre></div>
-<pre><code>##    words    weights
-## 1    oil 0.03186437
-## 2   said 0.02770316
-## 3 prices 0.02437419
-## 4   opec 0.02270970
-## 5    bpd 0.01605176
-## 6    mln 0.01521952</code></pre>
+<span class="kw">rm</span>(topic.model)</code></pre></div>
+<p>To initialize a model with the sampled topic indicators one need to create a new model, load the same data and then load the topic indicators. Unfortunately it is not possible to set the alpha parameter vector so it is not currently possible to initialize the model with the exact same alpha prior.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">new.topic.model &lt;-<span class="st"> </span><span class="kw">MalletLDA</span>(<span class="dt">num.topics=</span><span class="dv">10</span>, <span class="dt">alpha.sum =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="fl">0.1</span>)
+new.topic.model$<span class="kw">loadDocuments</span>(sotu.instances)
+<span class="kw">load.mallet.state</span>(<span class="dt">topic.model =</span> new.topic.model, <span class="dt">state.file =</span> state_file)
+
+doc.topics.counts[<span class="dv">1</span>:<span class="dv">3</span>, <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    3    0    0    0    0    0    0    0    1     0
+## [2,]    0    0    1    0    0    0    0    0   19     0
+## [3,]    1    0    7    0    0    0    3    0   30     0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mallet.doc.topics</span>(new.topic.model, <span class="dt">smoothed=</span><span class="ot">FALSE</span>, <span class="dt">normalized=</span><span class="ot">FALSE</span>)[<span class="dv">1</span>:<span class="dv">3</span>, <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    3    0    0    0    0    0    0    0    1     0
+## [2,]    0    0    1    0    0    0    0    0   19     0
+## [3,]    1    0    7    0    0    0    3    0   30     0</code></pre>
 </div>
 
 
