@@ -48,7 +48,7 @@ test_that(desc="load.mallet",{
   new.topictype.after.load <- mallet.topic.words(new.topic.model, smoothed=FALSE, normalized=FALSE)
 
   expect_equal(new.topictype.after.load, old.topictype)
-  expect_true(any(new.topictype.after.load != new.doctopic.before.load))
+  expect_true(any(new.topictype.after.load != new.topictype.before.load))
   expect_equal(680947, sum(old.topictype))
   expect_equal(680947, sum(new.topictype.after.load))
   expect_equal(680947, sum(new.topictype.before.load))
