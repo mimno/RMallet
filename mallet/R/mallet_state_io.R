@@ -7,11 +7,12 @@
 #' The state file can be read into R using the function 
 #' 
 #' @param topic.model a mallet \code{topic.model} object
-#' @param state.file File path to store the mallet state file to.
+#' @param state.file File path (.gz format) to store the mallet state file to.
 #' 
 #' @export
 save.mallet.state <- function(topic.model, state.file){
   checkmate::assert_path_for_output(state.file)
+  checkmate::assert_character(state.file, pattern = "\\.gz$")
   checkmate::assert_class(topic.model, "jobjRef")
   checkmate::assert_string(utils::capture.output(print(topic.model)), "Java-Object{cc.mallet.topics.RTopicModel@[a-zA-z0-9]+}")
 

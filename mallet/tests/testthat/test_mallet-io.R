@@ -16,6 +16,7 @@ old.doctopic <- mallet.doc.topics(topic.model, smoothed=FALSE, normalized=FALSE)
 old.topictype <- mallet.topic.words(topic.model, smoothed=FALSE, normalized=FALSE)
 
 state_file <- file.path(tempdir(), "temp_mallet_state.gz")
+wrong_state_file <- file.path(tempdir(), "temp_mallet_state.txt")
 instance_file <- file.path(tempdir(), "instances.txt")
 
 test_that(desc="save.mallet",{
@@ -23,6 +24,7 @@ test_that(desc="save.mallet",{
   expect_true(!file.exists(state_file))
   
   expect_silent(save.mallet.state(topic.model = topic.model, state.file = state_file))
+  expect_silent(save.mallet.state(topic.model = topic.model, state.file = wrong_state_file))  
   
   expect_true(file.exists(state_file))
   

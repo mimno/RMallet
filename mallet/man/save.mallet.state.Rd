@@ -9,7 +9,7 @@ save.mallet.state(topic.model, state.file)
 \arguments{
 \item{topic.model}{a mallet \code{topic.model} object}
 
-\item{state.file}{File path to store the mallet state file to.}
+\item{state.file}{File path (.gz format) to store the mallet state file to.}
 }
 \description{
 This function writes a current sampling state of mallet to file. 
