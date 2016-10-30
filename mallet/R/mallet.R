@@ -103,9 +103,13 @@ NULL
 #'
 #' 
 #' @export
-MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) }
-
-
+MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { 
+  checkmate::assert_int(num.topics, lower = 2)
+  checkmate::assert_number(alpha.sum, lower = 0)
+  checkmate::assert_number(beta, lower = 0)
+  
+  rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) 
+}
 
 
 #' @title 
