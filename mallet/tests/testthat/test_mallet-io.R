@@ -53,7 +53,7 @@ test_that(desc="load.mallet",{
   expect_equal(680947, sum(new.topictype.after.load))
   expect_equal(680947, sum(new.topictype.before.load))
   
-  skip("Currently a bug in mallet?")
+  skip_on_travis() # This is probably a bug in Mallet RTopicModel class
   expect_equal(new.doctopic.after.load, old.doctopic)
   expect_true(any(new.doctopic.after.load != new.doctopic.before.load))
   expect_equal(680947, sum(old.doctopic))
@@ -78,4 +78,8 @@ test_that(desc="mallet.instances io",{
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(new.sotu.instances)
   topic.model$train(20)
+  
+  expect_equal(unlink(instance_file), 0)
+  expect_true(!file.exists(instance_file))
+  
 })
