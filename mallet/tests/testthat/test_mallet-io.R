@@ -24,7 +24,7 @@ test_that(desc="save.mallet",{
   expect_true(!file.exists(state_file))
   
   expect_silent(save.mallet.state(topic.model = topic.model, state.file = state_file))
-  expect_silent(save.mallet.state(topic.model = topic.model, state.file = wrong_state_file))  
+  expect_error(save.mallet.state(topic.model = topic.model, state.file = wrong_state_file))  
   
   expect_true(file.exists(state_file))
   
