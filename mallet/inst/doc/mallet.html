@@ -10,7 +10,7 @@
 
 <meta name="author" content="David Mimno" />
 
-<meta name="date" content="2015-09-24" />
+<meta name="date" content="2015-11-11" />
 
 <title>Introduction to R mallet</title>
 
@@ -54,7 +54,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">Introduction to R mallet</h1>
 <h4 class="author"><em>David Mimno</em></h4>
-<h4 class="date"><em>2015-09-24</em></h4>
+<h4 class="date"><em>2015-11-11</em></h4>
 </div>
 
 
@@ -62,14 +62,18 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2>Installation</h2>
 <p>The <code>mallet</code> R package is available on CRAN. To install, simply use <code>install.packages()</code></p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;mallet&quot;</span>)</code></pre>
-<p>To load the package, simply use <code>library()</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mallet)</code></pre>
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
+<p>Depending of the size of your data it can be so that you need increase the Java virtual machine (JVM) heap memory to handle larger corpora. To do this you need specify how much memory you want to allocate to the JVM using the <code>Xmx</code> flag. Below is an example of allocating 4 gB to the JVM.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">java.parameters =</span> <span class="st">&quot;-Xmx4g&quot;</span>)</code></pre>
+<p>To load the package, simply use <code>library()</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mallet)</code></pre>
+<pre><code>## Loading required package: rJava</code></pre>
 <p>We start out by using the example data from the <code>tm</code> package.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tm)
-reut21578 &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tm)</code></pre>
+<pre><code>## Loading required package: NLP</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">reut21578 &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)
 reuters &lt;-<span class="st"> </span><span class="kw">VCorpus</span>(<span class="kw">DirSource</span>(reut21578), <span class="dt">readerControl =</span> <span class="kw">list</span>(<span class="dt">reader =</span> readReut21578XMLasPlain))
 reuters_text_vector &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(reuters, as.character))</code></pre>
 <p>We can also use the stopword file from the <code>tm</code> package.</p>
@@ -120,29 +124,65 @@ reuters_text_vector &lt;-<span class="st"> </span><span class="kw">unlist</span>
 topic.words &lt;-<span class="st"> </span><span class="kw">mallet.topic.words</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre>
 <p>What are the top words in topic 2? Notice that R indexes from 1 and Java from 0, so this will be the topic that mallet called topic 1.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mallet.top.words</span>(topic.model, <span class="dt">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="dt">num.top.words =</span> <span class="dv">5</span>)</code></pre>
-<pre><code>##     words    weights
-## 1     oil 0.02484272
-## 2     mln 0.01962258
-## 3    said 0.01614250
-## 4     u.s 0.01266241
-## 5 present 0.01266241</code></pre>
+<pre><code>##    words    weights
+## 1    oil 0.02704450
+## 2   said 0.02325719
+## 3   dlrs 0.01946987
+## 4  crude 0.01757622
+## 5 posted 0.01378890</code></pre>
 <p>Show the first document with at least 5% tokens belonging to topic 1.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect</span>(reuters[doc.topics[,<span class="dv">1</span>] &gt;<span class="st"> </span><span class="fl">0.05</span>][<span class="dv">1</span>])</code></pre>
 <pre><code>## &lt;&lt;VCorpus (documents: 1, metadata (corpus/indexed): 0/0)&gt;&gt;
 ## 
 ## [[1]]
 ## &lt;&lt;PlainTextDocument (metadata: 15)&gt;&gt;
-## Diamond Shamrock Corp said that
-## effective today it had cut its contract prices for crude oil by
-## 1.50 dlrs a barrel.
-##     The reduction brings its posted price for West Texas
-## Intermediate to 16.00 dlrs a barrel, the copany said.
-##     &quot;The price reduction today was made in the light of falling
-## oil product prices and a weak crude oil market,&quot; a company
-## spokeswoman said.
-##     Diamond is the latest in a line of U.S. oil companies that
-## have cut its contract, or posted, prices over the last two days
-## citing weak oil markets.
+## OPEC may be forced to meet before a
+## scheduled June session to readdress its production cutting
+## agreement if the organization wants to halt the current slide
+## in oil prices, oil industry analysts said.
+##     &quot;The movement to higher oil prices was never to be as easy
+## as OPEC thought. They may need an emergency meeting to sort out
+## the problems,&quot; said Daniel Yergin, director of Cambridge Energy
+## Research Associates, CERA.
+##     Analysts and oil industry sources said the problem OPEC
+## faces is excess oil supply in world oil markets.
+##     &quot;OPEC's problem is not a price problem but a production
+## issue and must be addressed in that way,&quot; said Paul Mlotok, oil
+## analyst with Salomon Brothers Inc.
+##     He said the market's earlier optimism about OPEC and its
+## ability to keep production under control have given way to a
+## pessimistic outlook that the organization must address soon if
+## it wishes to regain the initiative in oil prices.
+##     But some other analysts were uncertain that even an
+## emergency meeting would address the problem of OPEC production
+## above the 15.8 mln bpd quota set last December.
+##     &quot;OPEC has to learn that in a buyers market you cannot have
+## deemed quotas, fixed prices and set differentials,&quot; said the
+## regional manager for one of the major oil companies who spoke
+## on condition that he not be named. &quot;The market is now trying to
+## teach them that lesson again,&quot; he added.
+##     David T. Mizrahi, editor of Mideast reports, expects OPEC
+## to meet before June, although not immediately. However, he is
+## not optimistic that OPEC can address its principal problems.
+##     &quot;They will not meet now as they try to take advantage of the
+## winter demand to sell their oil, but in late March and April
+## when demand slackens,&quot; Mizrahi said.
+##     But Mizrahi said that OPEC is unlikely to do anything more
+## than reiterate its agreement to keep output at 15.8 mln bpd.&quot;
+##     Analysts said that the next two months will be critical for
+## OPEC's ability to hold together prices and output.
+##     &quot;OPEC must hold to its pact for the next six to eight weeks
+## since buyers will come back into the market then,&quot; said Dillard
+## Spriggs of Petroleum Analysis Ltd in New York.
+##     But Bijan Moussavar-Rahmani of Harvard University's Energy
+## and Environment Policy Center said that the demand for OPEC oil
+## has been rising through the first quarter and this may have
+## prompted excesses in its production.
+##     &quot;Demand for their (OPEC) oil is clearly above 15.8 mln bpd
+## and is probably closer to 17 mln bpd or higher now so what we
+## are seeing characterized as cheating is OPEC meeting this
+## demand through current production,&quot; he told Reuters in a
+## telephone interview.
 ##  Reuter</code></pre>
 <p>How do topics differ across different sub-corpora?</p>
 <pre class="sourceCode r"><code class="sourceCode r">usa_articles &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">meta</span>(reuters, <span class="st">&quot;places&quot;</span>)) ==<span class="st"> &quot;usa&quot;</span>
@@ -157,21 +197,21 @@ other.topic.words &lt;-<span class="st"> </span><span class="kw">mallet.subset.t
                                                <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre>
 <p>How do they compare?</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">mallet.top.words</span>(topic.model, usa.topic.words[<span class="dv">1</span>,]))</code></pre>
-<pre><code>##   words     weights
-## 1   oil 0.017071237
-## 2 crude 0.014351613
-## 3  said 0.011631989
-## 4  dlrs 0.011631989
-## 5 price 0.011631989
-## 6 today 0.008912364</code></pre>
+<pre><code>##      words      weights
+## 1   prices 0.0185921187
+## 2      mln 0.0150719677
+## 3      bpd 0.0150719677
+## 4     last 0.0045115148
+## 5  diamond 0.0009913638
+## 6 shamrock 0.0009913638</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">mallet.top.words</span>(topic.model, other.topic.words[<span class="dv">1</span>,]))</code></pre>
 <pre><code>##    words    weights
-## 1   said 0.01962793
-## 2    oil 0.01962793
-## 3   dlrs 0.01488520
-## 4  crude 0.01014247
-## 5 posted 0.01014247
-## 6  power 0.01014247</code></pre>
+## 1    oil 0.02875785
+## 2   said 0.02456350
+## 3 prices 0.02456350
+## 4   opec 0.02120802
+## 5    bpd 0.01617479
+## 6  saudi 0.01533592</code></pre>
 </div>
 
 

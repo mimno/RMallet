@@ -17,6 +17,14 @@ The ```mallet``` R package is available on CRAN. To install, simply use ```insta
 install.packages("mallet")
 ```
 
+## Usage
+
+Depending of the size of your data it can be so that you need increase the Java virtual machine (JVM) heap memory to handle larger corpora. To do this you need specify how much memory you want to allocate to the JVM using the ```Xmx``` flag. Below is an example of allocating 4 gB to the JVM. 
+
+```{r, eval=FALSE}
+options(java.parameters = "-Xmx4g")
+```
+
 To load the package, simply use ```library()```.
 
 ```{r}
@@ -24,7 +32,6 @@ library(mallet)
 ```
 
 
-## Usage
 
 We start out by using the example data from the ```tm``` package.
 
