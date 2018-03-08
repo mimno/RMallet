@@ -59,6 +59,21 @@
 #' @import rJava
 NULL
 
+#' State of the Union Adresses.
+#'
+#' A dataset containing State of the Union Adresses by paragraph from 1790 to 2009.
+#'
+#' @format A \code{\link[tibble]{tibble}} \code{data.frame} with 6359 rows and 3 variables:
+#' \describe{
+#'   \item{year}{Year of the adress.}
+#'   \item{paragraph}{The paragraph of the address.}
+#'   \item{text}{The address content.}
+#' }
+#' @source \url{https://en.wikipedia.org/wiki/State_of_the_Union}
+"sotu"
+
+
+
 #' @title 
 #' Create a Mallet topic model trainer
 #' 
@@ -88,9 +103,13 @@ NULL
 #'
 #' 
 #' @export
-MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) }
-
-
+MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) { 
+  checkmate::assert_int(num.topics, lower = 2)
+  checkmate::assert_number(alpha.sum, lower = 0)
+  checkmate::assert_number(beta, lower = 0)
+  
+  rJava::.jnew("cc/mallet/topics/RTopicModel", num.topics, alpha.sum, beta) 
+}
 
 
 #' @title 
@@ -231,14 +250,15 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 #' and converts them into a Mallet instance list.
 #' 
 #' @param id.array
-#' An array of document IDs.
+#' An array of document IDs. Default is \code{text.array} index.
 #' @param text.array
-#' An array of text strings to use as documents. The type of the array must be \code{character}.
-#' @param stoplist.file
-#' The name of a file containing stopwords (words to ignore), one per line. 
-#' If the file is not in the current working directory, you may need to include a full path.
+#' A character vector with each element containing a document.
+#' @param stoplist
+#' The name of a file containing stopwords (words to ignore), one per line, or a character vector containing stop words.
+#' If the file is not in the current working directory, you may need to include a full path. 
+#' Default is no stoplist.
 #' @param preserve.case
-#' By default, the input text is converted to all lowercase
+#' By default, the input text is converted to all lowercase.
 #' @param token.regexp
 #' A quoted string representing a regular expression that defines a token. The default 
 #' is one or more unicode letter: "[\\\\p\{L\}]+". Note that special characters must 
@@ -249,15 +269,33 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 #' 
 #' @examples 
 #' \dontrun{
-#' mallet.instances <- mallet.import(documents$id, documents$text, "en.txt",
-#'                                   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' data(sotu)
+#' stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
+#' mallet.instances <- 
+#'   mallet.import(text.array = sotu[["text"]], 
+#'   stoplist = stopwords_en,
+#'   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
 #' }
-#' 
 #' @export
-mallet.import <- function(id.array, text.array, stoplist.file, preserve.case=FALSE, token.regexp="[\\p{L}]+") {
-  stoplist.file <- normalizePath(stoplist.file)
-  id.array <- as.character(id.array)
-  if (class(text.array[1]) != "character") stop("Text field is not a string. Remember to create data frames with stringsAsFactors=F.")
+mallet.import <- function(id.array = NULL, text.array, stoplist = "", preserve.case=FALSE, token.regexp="[\\p{L}]+") {
+  checkmate::assert_character(id.array, null.ok = TRUE, len = length(text.array))
+  checkmate::assert_character(text.array, any.missing = FALSE)
+  checkmate::assert(checkmate::check_character(stoplist, any.missing = FALSE),
+                    checkmate::check_file_exists(stoplist))
+  checkmate::assert_flag(preserve.case)
+  checkmate::assert_string(token.regexp)
+  
+  if(checkmate::test_file_exists(stoplist)) {
+    stoplist.file <- normalizePath(stoplist) 
+  } else {
+    tmp_file <- tempfile(fileext = ".txt")
+    writeLines(text = stoplist, tmp_file)
+    stoplist.file <- tmp_file
+  }
+  if(is.null(id.array)){
+    id.array <- as.character(1:length(text.array))
+  } 
+
   token.pattern <- rJava::J("java/util/regex/Pattern")$compile(token.regexp)
   pipe.list <- rJava::.jnew("java/util/ArrayList")
   pipe.list$add(rJava::.jnew("cc/mallet/pipe/CharSequence2TokenSequence", token.pattern))
@@ -392,14 +430,16 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
   topic.docs <- t(doc.topics)
   topic.docs <- topic.docs / rowSums(topic.docs)
 
-  hclust(balance * dist(topic.words) + (1.0 - balance) * dist(topic.docs))
+  stats::hclust(balance * stats::dist(topic.words) + (1.0 - balance) * stats::dist(topic.docs))
 }
 
 
-mallet.save.instances <- function(instances, filename) {
+
+save.mallet.instances <- function(instances, filename) {
   instances$save(rJava::.jnew("java/io/File", filename))
 }
 
-mallet.load <- function(filename) {
+
+load.mallet.instances <- function(filename) {
   rJava::J("cc.mallet.types.InstanceList")$load(rJava::.jnew("java/io/File", filename))
 }
