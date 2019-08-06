@@ -433,12 +433,23 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
   stats::hclust(balance * stats::dist(topic.words) + (1.0 - balance) * stats::dist(topic.docs))
 }
 
-
+#' @title 
+#' Load a topic from a file
+#' 
+#' @description 
+#' This function returns the topic model loaded from a file.
+#' 
+#' @param filename
+#' The mallet topic file
+#' 
+#' @export
+mallet.topic.load <- function(filename) {
+  rJava::J("cc/mallet/topics/RTopicModel")$read(rJava::.jnew("java/io/File", filename))
+}
 
 save.mallet.instances <- function(instances, filename) {
   instances$save(rJava::.jnew("java/io/File", filename))
 }
-
 
 load.mallet.instances <- function(filename) {
   rJava::J("cc.mallet.types.InstanceList")$load(rJava::.jnew("java/io/File", filename))
