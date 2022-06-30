@@ -7,9 +7,8 @@
 mallet.topic.load(filename)
 }
 \arguments{
-\item{filname}{The mallet topic file}
+\item{filename}{The mallet topic file}
 }
 \description{
 This function returns the topic model loaded from a file.
 }
-

@@ -11,14 +11,14 @@ mallet.topic.hclust(doc.topics, topic.words, balance = 0.3)
 
 \item{topic.words}{A topics by words matrix of word probabilities.}
 
-\item{balance}{A value between 0.0 (use only document-level similarity) 
+\item{balance}{A value between 0.0 (use only document-level similarity)
 and 1.0 (use only word-level similarity).}
 
 \item{...}{Further arguments for \code{\link[stats]{hclust}}.}
 }
 \description{
-Returns a hierarchical clustering of topics that can be plotted as a dendrogram. 
-There are two ways of measuring topic similarity: topics may contain the some of 
+Returns a hierarchical clustering of topics that can be plotted as a dendrogram.
+There are two ways of measuring topic similarity: topics may contain the some of
 the same words, or the may appear in some of the same documents. The \code{balance} parameter allows you to interpolate between the similarities determined by these two methods.
 }
 \examples{
@@ -29,7 +29,6 @@ plot(mallet.topic.hclust(doc.topics, topic.words, 0.3), labels=topic.labels)
 
 }
 \seealso{
-This function uses data matrices from \code{\link{mallet.doc.topics}} 
+This function uses data matrices from \code{\link{mallet.doc.topics}}
 and \code{\link{mallet.topic.words}}
 }
-

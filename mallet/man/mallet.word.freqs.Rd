@@ -10,13 +10,12 @@ mallet.word.freqs(topic.model)
 \item{topic.model}{A Mallet topic trainer returned by \code{MalletLDA}}
 }
 \description{
-This method returns a data frame with one row for each unique vocabulary word, 
-and three columns: the word as a \code{character} value, the total number of 
-tokens of that word type, and the total number of documents that contain that 
-word at least once. This information can be useful in identifying candidate 
+This method returns a data frame with one row for each unique vocabulary word,
+and three columns: the word as a \code{character} value, the total number of
+tokens of that word type, and the total number of documents that contain that
+word at least once. This information can be useful in identifying candidate
 stopwords.
 }
 \seealso{
 \code{\link{MalletLDA}}
 }
-
