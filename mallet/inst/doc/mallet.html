@@ -8,9 +8,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
-<meta name="author" content="David Mimno" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="date" content="2015-11-11" />
+<meta name="author" content="David Mimno, Måns Magnusson" />
+
+<meta name="date" content="2016-10-28" />
 
 <title>Introduction to R mallet</title>
 
@@ -18,32 +20,46 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
-</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
 
 
-<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -51,167 +67,113 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 
 
-<div id="header">
-<h1 class="title">Introduction to R mallet</h1>
-<h4 class="author"><em>David Mimno</em></h4>
-<h4 class="date"><em>2015-11-11</em></h4>
-</div>
 
+<h1 class="title toc-ignore">Introduction to R mallet</h1>
+<h4 class="author"><em>David Mimno, Måns Magnusson</em></h4>
+<h4 class="date"><em>2016-10-28</em></h4>
 
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>The <code>mallet</code> R package is available on CRAN. To install, simply use <code>install.packages()</code></p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;mallet&quot;</span>)</code></pre>
+  
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;mallet&quot;</span>)</code></pre></div>
+<p>To load the package, simply use <code>library()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mallet)</code></pre></div>
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
-<p>Depending of the size of your data it can be so that you need increase the Java virtual machine (JVM) heap memory to handle larger corpora. To do this you need specify how much memory you want to allocate to the JVM using the <code>Xmx</code> flag. Below is an example of allocating 4 gB to the JVM.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">java.parameters =</span> <span class="st">&quot;-Xmx4g&quot;</span>)</code></pre>
-<p>To load the package, simply use <code>library()</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mallet)</code></pre>
-<pre><code>## Loading required package: rJava</code></pre>
-<p>We start out by using the example data from the <code>tm</code> package.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tm)</code></pre>
-<pre><code>## Loading required package: NLP</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">reut21578 &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)
-reuters &lt;-<span class="st"> </span><span class="kw">VCorpus</span>(<span class="kw">DirSource</span>(reut21578), <span class="dt">readerControl =</span> <span class="kw">list</span>(<span class="dt">reader =</span> readReut21578XMLasPlain))
-reuters_text_vector &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">lapply</span>(reuters, as.character))</code></pre>
-<p>We can also use the stopword file from the <code>tm</code> package.</p>
-<pre class="sourceCode r"><code class="sourceCode r">stopwords_en &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;stopwords/english.dat&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tm&quot;</span>)</code></pre>
-<p>Create a mallet instance list object. Right now I have to specify the stoplist as a file, I can’t pass in a list from R. This function has a few hidden options (whether to lowercase, how we define a token). See <code>?mallet.import</code> for details.</p>
-<pre class="sourceCode r"><code class="sourceCode r">mallet.instances &lt;-<span class="st"> </span><span class="kw">mallet.import</span>(<span class="dt">id.array =</span> <span class="kw">as.character</span>(<span class="dv">1</span>:<span class="kw">length</span>(reuters_text_vector)), 
-                                  <span class="dt">text.array =</span> reuters_text_vector, 
-                                  <span class="dt">stoplist.file =</span> stopwords_en,
-                                  <span class="dt">token.regexp =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">p{L}[</span><span class="ch">\\</span><span class="st">p{L}</span><span class="ch">\\</span><span class="st">p{P}]+</span><span class="ch">\\</span><span class="st">p{L}&quot;</span>)</code></pre>
-<p>Create a topic trainer object.</p>
-<pre class="sourceCode r"><code class="sourceCode r">topic.model &lt;-<span class="st"> </span><span class="kw">MalletLDA</span>(<span class="dt">num.topics=</span><span class="dv">5</span>, <span class="dt">alpha.sum =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="fl">0.1</span>)</code></pre>
+<p>We start out by using the example data set of the State of the Union adresses from 1790 to 2009.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
+<span class="kw">data</span>(sotu)
+sotu[[<span class="st">&quot;text&quot;</span>]][<span class="dv">1</span>:<span class="dv">2</span>]</code></pre></div>
+<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;                                                                                                                                                                                                                                    
+## [2] &quot;In meeting you again I feel much satisfaction in being able to repeat my  congratulations on the favorable prospects which continue to distinguish  our public affairs. The abundant fruits of another year have blessed our  country with plenty and with the means of a flourishing commerce.  &quot;</code></pre>
+<p>Mallet comes with five different stop list files.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir</span>(<span class="kw">system.file</span>(<span class="st">&quot;stoplists/&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;mallet&quot;</span>))</code></pre></div>
+<pre><code>## [1] &quot;de.txt&quot; &quot;en.txt&quot; &quot;fi.txt&quot; &quot;fr.txt&quot; &quot;jp.txt&quot; &quot;README&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stopwords_en &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;stoplists/en.txt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;mallet&quot;</span>)</code></pre></div>
+<p>As a first step we need to create a LDA trainer object and supply the trainer with documents. We start out by creating a mallet instance list object.</p>
+<p>This function has a few extra options (whether to lowercase, how we define a token). See <code>?mallet.import</code> for details.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sotu.instances &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">mallet.import</span>(<span class="dt">id.array =</span> <span class="kw">row.names</span>(sotu), 
+                <span class="dt">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], 
+                <span class="dt">stoplist =</span> stopwords_en,
+                <span class="dt">token.regexp =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">p{L}[</span><span class="ch">\\</span><span class="st">p{L}</span><span class="ch">\\</span><span class="st">p{P}]+</span><span class="ch">\\</span><span class="st">p{L}&quot;</span>)</code></pre></div>
+<p>If the data is already cleaned and we just want to use the index of <code>text.array</code> we can simply just supply the <code>text.array</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sotu.instances.short &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">mallet.import</span>(<span class="dt">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]])</code></pre></div>
+<p>It is also possible to supply stop words as a character vector.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stop_vector &lt;-<span class="st"> </span><span class="kw">readLines</span>(stopwords_en)
+sotu.instances.short &lt;-<span class="st"> </span>
+<span class="st">  </span><span class="kw">mallet.import</span>(<span class="dt">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], 
+                <span class="dt">stoplist =</span> stop_vector)</code></pre></div>
+<p>To fit a model we first need to create a topic trainer object.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model &lt;-<span class="st"> </span><span class="kw">MalletLDA</span>(<span class="dt">num.topics=</span><span class="dv">10</span>, <span class="dt">alpha.sum =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="fl">0.1</span>)</code></pre></div>
+  
 <p>Load our documents. We could also pass in the filename of a saved instance list file that we build from the command-line tools.</p>
-<pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">loadDocuments</span>(mallet.instances)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">loadDocuments</span>(sotu.instances)</code></pre></div>
 <p>Get the vocabulary, and some statistics about word frequencies. These may be useful in further curating the stopword list.</p>
-<pre class="sourceCode r"><code class="sourceCode r">vocabulary &lt;-<span class="st"> </span>topic.model$<span class="kw">getVocabulary</span>()
-<span class="kw">head</span>(vocabulary)</code></pre>
-<pre><code>## [1] &quot;diamond&quot;   &quot;shamrock&quot;  &quot;corp&quot;      &quot;said&quot;      &quot;effective&quot; &quot;today&quot;</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">word.freqs &lt;-<span class="st"> </span><span class="kw">mallet.word.freqs</span>(topic.model)
-<span class="kw">head</span>(word.freqs)</code></pre>
-<pre><code>##       words term.freq doc.freq
-## 1   diamond         0        0
-## 2  shamrock         1        1
-## 3      corp         4        2
-## 4      said        73       20
-## 5 effective         4        4
-## 6     today         8        7</code></pre>
-<p>Get the vocabulary, and some statistics about word frequencies. These may be useful in further curating the stopword list.</p>
-<pre class="sourceCode r"><code class="sourceCode r">vocabulary &lt;-<span class="st"> </span>topic.model$<span class="kw">getVocabulary</span>()
-<span class="kw">head</span>(vocabulary)</code></pre>
-<pre><code>## [1] &quot;diamond&quot;   &quot;shamrock&quot;  &quot;corp&quot;      &quot;said&quot;      &quot;effective&quot; &quot;today&quot;</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">word.freqs &lt;-<span class="st"> </span><span class="kw">mallet.word.freqs</span>(topic.model)
-<span class="kw">head</span>(word.freqs)</code></pre>
-<pre><code>##       words term.freq doc.freq
-## 1   diamond         0        0
-## 2  shamrock         1        1
-## 3      corp         4        2
-## 4      said        73       20
-## 5 effective         4        4
-## 6     today         8        7</code></pre>
-<p>Optimize hyperparameters every 20 iterations, after 50 burn-in iterations.</p>
-<pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vocabulary &lt;-<span class="st"> </span>topic.model$<span class="kw">getVocabulary</span>()
+<span class="kw">head</span>(vocabulary)</code></pre></div>
+<pre><code>## [1] &quot;fellow-citizens&quot; &quot;senate&quot;          &quot;house&quot;           &quot;representatives&quot;
+## [5] &quot;meeting&quot;         &quot;feel&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">word.freqs &lt;-<span class="st"> </span><span class="kw">mallet.word.freqs</span>(topic.model)
+<span class="kw">head</span>(word.freqs)</code></pre></div>
+<pre><code>##             words term.freq doc.freq
+## 1 fellow-citizens        19       16
+## 2          senate       572      284
+## 3           house       485      242
+## 4 representatives       502      248
+## 5         meeting       198      122
+## 6            feel       192      131</code></pre>
+<p>Optimize hyperparameters ( and ) every 20 iterations, after 50 burn-in iterations.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</code></pre></div>
 <p>Now train a model. Note that hyperparameter optimization is on, by default. We can specify the number of iterations. Here we’ll use a large-ish round number.</p>
-<pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">train</span>(<span class="dv">200</span>)</code></pre>
-<p><strong>NEW</strong> Run through a few iterations where we pick the best topic for each token, rather than sampling from the posterior distribution.</p>
-<pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">maximize</span>(<span class="dv">10</span>)</code></pre>
-<p>Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities,so we normalize, and add “smoothing” so that nothing has exactly 0 probability.</p>
-<pre class="sourceCode r"><code class="sourceCode r">doc.topics &lt;-<span class="st"> </span><span class="kw">mallet.doc.topics</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)
-topic.words &lt;-<span class="st"> </span><span class="kw">mallet.topic.words</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">train</span>(<span class="dv">200</span>)</code></pre></div>
+<p>We can also run through a few iterations where we pick the best topic for each token, rather than sampling from the posterior distribution.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">topic.model$<span class="kw">maximize</span>(<span class="dv">10</span>)</code></pre></div>
+<p>Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities, so we normalize, and add “smoothing” so that nothing has exactly 0 probability.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">doc.topics &lt;-<span class="st"> </span><span class="kw">mallet.doc.topics</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)
+topic.words &lt;-<span class="st"> </span><span class="kw">mallet.topic.words</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">TRUE</span>, <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre></div>
 <p>What are the top words in topic 2? Notice that R indexes from 1 and Java from 0, so this will be the topic that mallet called topic 1.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mallet.top.words</span>(topic.model, <span class="dt">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="dt">num.top.words =</span> <span class="dv">5</span>)</code></pre>
-<pre><code>##    words    weights
-## 1    oil 0.02704450
-## 2   said 0.02325719
-## 3   dlrs 0.01946987
-## 4  crude 0.01757622
-## 5 posted 0.01378890</code></pre>
-<p>Show the first document with at least 5% tokens belonging to topic 1.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect</span>(reuters[doc.topics[,<span class="dv">1</span>] &gt;<span class="st"> </span><span class="fl">0.05</span>][<span class="dv">1</span>])</code></pre>
-<pre><code>## &lt;&lt;VCorpus (documents: 1, metadata (corpus/indexed): 0/0)&gt;&gt;
-## 
-## [[1]]
-## &lt;&lt;PlainTextDocument (metadata: 15)&gt;&gt;
-## OPEC may be forced to meet before a
-## scheduled June session to readdress its production cutting
-## agreement if the organization wants to halt the current slide
-## in oil prices, oil industry analysts said.
-##     &quot;The movement to higher oil prices was never to be as easy
-## as OPEC thought. They may need an emergency meeting to sort out
-## the problems,&quot; said Daniel Yergin, director of Cambridge Energy
-## Research Associates, CERA.
-##     Analysts and oil industry sources said the problem OPEC
-## faces is excess oil supply in world oil markets.
-##     &quot;OPEC's problem is not a price problem but a production
-## issue and must be addressed in that way,&quot; said Paul Mlotok, oil
-## analyst with Salomon Brothers Inc.
-##     He said the market's earlier optimism about OPEC and its
-## ability to keep production under control have given way to a
-## pessimistic outlook that the organization must address soon if
-## it wishes to regain the initiative in oil prices.
-##     But some other analysts were uncertain that even an
-## emergency meeting would address the problem of OPEC production
-## above the 15.8 mln bpd quota set last December.
-##     &quot;OPEC has to learn that in a buyers market you cannot have
-## deemed quotas, fixed prices and set differentials,&quot; said the
-## regional manager for one of the major oil companies who spoke
-## on condition that he not be named. &quot;The market is now trying to
-## teach them that lesson again,&quot; he added.
-##     David T. Mizrahi, editor of Mideast reports, expects OPEC
-## to meet before June, although not immediately. However, he is
-## not optimistic that OPEC can address its principal problems.
-##     &quot;They will not meet now as they try to take advantage of the
-## winter demand to sell their oil, but in late March and April
-## when demand slackens,&quot; Mizrahi said.
-##     But Mizrahi said that OPEC is unlikely to do anything more
-## than reiterate its agreement to keep output at 15.8 mln bpd.&quot;
-##     Analysts said that the next two months will be critical for
-## OPEC's ability to hold together prices and output.
-##     &quot;OPEC must hold to its pact for the next six to eight weeks
-## since buyers will come back into the market then,&quot; said Dillard
-## Spriggs of Petroleum Analysis Ltd in New York.
-##     But Bijan Moussavar-Rahmani of Harvard University's Energy
-## and Environment Policy Center said that the demand for OPEC oil
-## has been rising through the first quarter and this may have
-## prompted excesses in its production.
-##     &quot;Demand for their (OPEC) oil is clearly above 15.8 mln bpd
-## and is probably closer to 17 mln bpd or higher now so what we
-## are seeing characterized as cheating is OPEC meeting this
-## demand through current production,&quot; he told Reuters in a
-## telephone interview.
-##  Reuter</code></pre>
-<p>How do topics differ across different sub-corpora?</p>
-<pre class="sourceCode r"><code class="sourceCode r">usa_articles &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">meta</span>(reuters, <span class="st">&quot;places&quot;</span>)) ==<span class="st"> &quot;usa&quot;</span>
 
-usa.topic.words &lt;-<span class="st"> </span><span class="kw">mallet.subset.topic.words</span>(topic.model, 
-                                              <span class="dt">subset.docs =</span> usa_articles,
-                                              <span class="dt">smoothed=</span><span class="ot">TRUE</span>, 
-                                              <span class="dt">normalized=</span><span class="ot">TRUE</span>)
-other.topic.words &lt;-<span class="st"> </span><span class="kw">mallet.subset.topic.words</span>(topic.model, 
-                                               <span class="dt">subset.docs =</span> !usa_articles,
-                                               <span class="dt">smoothed=</span><span class="ot">TRUE</span>, 
-                                               <span class="dt">normalized=</span><span class="ot">TRUE</span>)</code></pre>
-<p>How do they compare?</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">mallet.top.words</span>(topic.model, usa.topic.words[<span class="dv">1</span>,]))</code></pre>
-<pre><code>##      words      weights
-## 1   prices 0.0185921187
-## 2      mln 0.0150719677
-## 3      bpd 0.0150719677
-## 4     last 0.0045115148
-## 5  diamond 0.0009913638
-## 6 shamrock 0.0009913638</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">mallet.top.words</span>(topic.model, other.topic.words[<span class="dv">1</span>,]))</code></pre>
-<pre><code>##    words    weights
-## 1    oil 0.02875785
-## 2   said 0.02456350
-## 3 prices 0.02456350
-## 4   opec 0.02120802
-## 5    bpd 0.01617479
-## 6  saudi 0.01533592</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mallet.top.words</span>(topic.model, <span class="dt">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="dt">num.top.words =</span> <span class="dv">5</span>)</code></pre></div>
+<pre><code>##        words    weights
+## 1   congress 0.04345107
+## 2       made 0.02189649
+## 3 department 0.01623770
+## 4    subject 0.01606708
+## 5  attention 0.01323769</code></pre>
+<p>Show the first document with at least 5% tokens belonging to topic 2.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sotu[[<span class="st">&quot;text&quot;</span>]][doc.topics[,<span class="dv">2</span>] &gt;<span class="st"> </span><span class="fl">0.05</span>][<span class="dv">1</span>]</code></pre></div>
+<pre><code>## [1] &quot;In conformity to the powers vested in me by acts of the last session, a  loan of 3,000,000 florins, toward which some provisional measures had  previously taken place, has been completed in Holland. As well the celerity  with which it has been filled as the nature of the terms (considering the  more than ordinary demand for borrowing created by the situation of Europe)  give a reasonable hope that the further execution of those powers may  proceed with advantage and success. The Secretary of the Treasury has my  directions to communicate such further particulars as may be requisite for  more precise information.  &quot;</code></pre>
+</div>
+<div id="save-and-load-topic-states" class="section level2">
+<h2>Save and load topic states</h2>
+<p>We can also store our current topic model state to use it for postprocessing. We can store the state file either as a txt file or a compressed gzip file.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">state_file &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">tempdir</span>(), <span class="st">&quot;temp_mallet_state.gz&quot;</span>)
+<span class="kw">save.mallet.state</span>(<span class="dt">topic.model =</span> topic.model, <span class="dt">state.file =</span> state_file)</code></pre></div>
+<p>We also store the topic counts per document and then remove the old model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">doc.topics.counts &lt;-<span class="st"> </span><span class="kw">mallet.doc.topics</span>(topic.model, <span class="dt">smoothed=</span><span class="ot">FALSE</span>, <span class="dt">normalized=</span><span class="ot">FALSE</span>)
+
+<span class="kw">rm</span>(topic.model)</code></pre></div>
+<p>To initialize a model with the sampled topic indicators one need to create a new model, load the same data and then load the topic indicators. Unfortunately it is not possible to set the alpha parameter vector so it is not currently possible to initialize the model with the exact same alpha prior.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">new.topic.model &lt;-<span class="st"> </span><span class="kw">MalletLDA</span>(<span class="dt">num.topics=</span><span class="dv">10</span>, <span class="dt">alpha.sum =</span> <span class="dv">1</span>, <span class="dt">beta =</span> <span class="fl">0.1</span>)
+new.topic.model$<span class="kw">loadDocuments</span>(sotu.instances)
+<span class="kw">load.mallet.state</span>(<span class="dt">topic.model =</span> new.topic.model, <span class="dt">state.file =</span> state_file)
+
+doc.topics.counts[<span class="dv">1</span>:<span class="dv">3</span>, <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    3    0    0    0    0    0    0    0    1     0
+## [2,]    0    0    1    0    0    0    0    0   19     0
+## [3,]    1    0    7    0    0    0    3    0   30     0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mallet.doc.topics</span>(new.topic.model, <span class="dt">smoothed=</span><span class="ot">FALSE</span>, <span class="dt">normalized=</span><span class="ot">FALSE</span>)[<span class="dv">1</span>:<span class="dv">3</span>, <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    3    0    0    0    0    0    0    0    1     0
+## [2,]    0    0    1    0    0    0    0    0   19     0
+## [3,]    1    0    7    0    0    0    3    0   30     0</code></pre>
+
 </div>
 
 
