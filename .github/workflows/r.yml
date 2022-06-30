@@ -36,6 +36,9 @@ jobs:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
       - run: java -version
+      - uses: r-lib/actions/setup-pandoc@v2
+        with:
+          pandoc-version: '2.17.1' # The pandoc version to download (if necessary) and use.
       - name: Install libcurl
         run: |
           sudo apt-get update
