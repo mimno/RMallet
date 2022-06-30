@@ -1,6 +1,6 @@
 ---
 title: "Introduction to R mallet"
-author: "David Mimno"
+author: "David Mimno and Måns Magnusson"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -11,7 +11,9 @@ vignette: >
 
 ## Installation
 
-The ```mallet``` R package is available on CRAN. To install, simply use ```install.packages()```
+To use the mallet R package, we need to use `rJava`, an R package for using Java within R (to access the mallet Java code). See details at [github.com/s-u/rJava](https://github.com/s-u/rJava).
+
+Next, install the ```mallet``` R package from CRAN. To install, simply use ```install.packages()```
 
 ```{r, eval=FALSE}
 install.packages("mallet")
@@ -54,7 +56,7 @@ This function has a few hidden options (whether to lowercase, how we define a to
 ```{r}
 mallet.instances <- mallet.import(id.array = as.character(1:length(reuters_text_vector)), 
                                   text.array = reuters_text_vector, 
-                                  stoplist.file = stopwords_en,
+                                  stoplist = stopwords_en,
                                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
 ```
 
@@ -125,7 +127,7 @@ mallet.top.words(topic.model, word.weights = topic.words[2,], num.top.words = 5)
 Show the first document with at least 5% tokens belonging to topic 1.
 
 ```{r}
-inspect(reuters[doc.topics[,1] > 0.05][1])
+inspect(reuters[doc.topics[,1] > 0.05][[1]])
 ```
 
 How do topics differ across different sub-corpora?
@@ -150,3 +152,4 @@ head(mallet.top.words(topic.model, usa.topic.words[1,]))
 head(mallet.top.words(topic.model, other.topic.words[1,]))
 ```
 
+This just gives a first example of how to use the mallet R package for topic modeling.

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="David Mimno and Måns Magnusson" />
+
+<meta name="date" content="2022-06-30" />
+
+<title>Introduction to R mallet</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to R mallet</h1>
+<h4 class="author">David Mimno and Måns Magnusson</h4>
+<h4 class="date">2022-06-30</h4>
+
+
+
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>To use the mallet R package, we need to use <code>rJava</code>, an R
+package for using Java within R (to access the mallet Java code). See
+details at <a href="https://github.com/s-u/rJava">github.com/s-u/rJava</a>.</p>
+<p>Next, install the <code>mallet</code> R package from CRAN. To
+install, simply use <code>install.packages()</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;mallet&quot;</span>)</span></code></pre></div>
+</div>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<p>Depending of the size of your data it can be so that you need
+increase the Java virtual machine (JVM) heap memory to handle larger
+corpora. To do this you need specify how much memory you want to
+allocate to the JVM using the <code>Xmx</code> flag. Below is an example
+of allocating 4 gB to the JVM.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">&quot;-Xmx4g&quot;</span>)</span></code></pre></div>
+<p>To load the package, simply use <code>library()</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mallet)</span></code></pre></div>
+<p>We start out by using the example data from the <code>tm</code>
+package.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tm)</span></code></pre></div>
+<pre><code>## Loading required package: NLP</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>reut21578 <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;texts&quot;</span>, <span class="st">&quot;crude&quot;</span>, <span class="at">package =</span> <span class="st">&quot;tm&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>reuters <span class="ot">&lt;-</span> <span class="fu">VCorpus</span>(<span class="fu">DirSource</span>(reut21578), <span class="at">readerControl =</span> <span class="fu">list</span>(<span class="at">reader =</span> readReut21578XMLasPlain))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>reuters_text_vector <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(reuters, as.character))</span></code></pre></div>
+<p>We can also use the stopword file from the <code>tm</code>
+package.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>stopwords_en <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;stopwords/english.dat&quot;</span>, <span class="at">package =</span> <span class="st">&quot;tm&quot;</span>)</span></code></pre></div>
+<p>Create a mallet instance list object. Right now I have to specify the
+stoplist as a file, I can’t pass in a list from R. This function has a
+few hidden options (whether to lowercase, how we define a token). See
+<code>?mallet.import</code> for details.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mallet.instances <span class="ot">&lt;-</span> <span class="fu">mallet.import</span>(<span class="at">id.array =</span> <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(reuters_text_vector)), </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">text.array =</span> reuters_text_vector, </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">stoplist =</span> stopwords_en,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">token.regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">p{L}[</span><span class="sc">\\</span><span class="st">p{L}</span><span class="sc">\\</span><span class="st">p{P}]+</span><span class="sc">\\</span><span class="st">p{L}&quot;</span>)</span></code></pre></div>
+<p>Create a topic trainer object.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>topic.model <span class="ot">&lt;-</span> <span class="fu">MalletLDA</span>(<span class="at">num.topics=</span><span class="dv">5</span>, <span class="at">alpha.sum =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="fl">0.1</span>)</span></code></pre></div>
+<p>Load our documents. We could also pass in the filename of a saved
+instance list file that we build from the command-line tools.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">loadDocuments</span>(mallet.instances)</span></code></pre></div>
+<p>Get the vocabulary, and some statistics about word frequencies. These
+may be useful in further curating the stopword list.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>vocabulary <span class="ot">&lt;-</span> topic.model<span class="sc">$</span><span class="fu">getVocabulary</span>()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vocabulary)</span></code></pre></div>
+<pre><code>## [1] &quot;diamond&quot;   &quot;shamrock&quot;  &quot;corp&quot;      &quot;said&quot;      &quot;effective&quot; &quot;today&quot;</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>word.freqs <span class="ot">&lt;-</span> <span class="fu">mallet.word.freqs</span>(topic.model)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(word.freqs)</span></code></pre></div>
+<pre><code>##       words term.freq doc.freq
+## 1   diamond         0        0
+## 2  shamrock         1        1
+## 3      corp         4        2
+## 4      said        73       20
+## 5 effective         4        4
+## 6     today         8        7</code></pre>
+<p>Get the vocabulary, and some statistics about word frequencies. These
+may be useful in further curating the stopword list.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>vocabulary <span class="ot">&lt;-</span> topic.model<span class="sc">$</span><span class="fu">getVocabulary</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vocabulary)</span></code></pre></div>
+<pre><code>## [1] &quot;diamond&quot;   &quot;shamrock&quot;  &quot;corp&quot;      &quot;said&quot;      &quot;effective&quot; &quot;today&quot;</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>word.freqs <span class="ot">&lt;-</span> <span class="fu">mallet.word.freqs</span>(topic.model)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(word.freqs)</span></code></pre></div>
+<pre><code>##       words term.freq doc.freq
+## 1   diamond         0        0
+## 2  shamrock         1        1
+## 3      corp         4        2
+## 4      said        73       20
+## 5 effective         4        4
+## 6     today         8        7</code></pre>
+<p>Optimize hyperparameters every 20 iterations, after 50 burn-in
+iterations.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</span></code></pre></div>
+<p>Now train a model. Note that hyperparameter optimization is on, by
+default. We can specify the number of iterations. Here we’ll use a
+large-ish round number.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">train</span>(<span class="dv">200</span>)</span></code></pre></div>
+<p><strong>NEW</strong> Run through a few iterations where we pick the
+best topic for each token, rather than sampling from the posterior
+distribution.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">maximize</span>(<span class="dv">10</span>)</span></code></pre></div>
+<p>Get the probability of topics in documents and the probability of
+words in topics. By default, these functions return raw word counts.
+Here we want probabilities,so we normalize, and add “smoothing” so that
+nothing has exactly 0 probability.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>doc.topics <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>topic.words <span class="ot">&lt;-</span> <span class="fu">mallet.topic.words</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>What are the top words in topic 2? Notice that R indexes from 1 and
+Java from 0, so this will be the topic that mallet called topic 1.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.top.words</span>(topic.model, <span class="at">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="at">num.top.words =</span> <span class="dv">5</span>)</span></code></pre></div>
+<pre><code>##    words    weights
+## 1    oil 0.02670665
+## 2   said 0.02296854
+## 3   dlrs 0.01923044
+## 4  crude 0.01736139
+## 5 posted 0.01362328</code></pre>
+<p>Show the first document with at least 5% tokens belonging to topic
+1.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">inspect</span>(reuters[doc.topics[,<span class="dv">1</span>] <span class="sc">&gt;</span> <span class="fl">0.05</span>][[<span class="dv">1</span>]])</span></code></pre></div>
+<pre><code>## &lt;&lt;PlainTextDocument&gt;&gt;
+## Metadata:  16
+## Content:  chars: 930
+## 
+## Saudi riyal interbank deposits were
+## steady at yesterday&#39;s higher levels in a quiet market.
+##     Traders said they were reluctant to take out new positions
+## amidst uncertainty over whether OPEC will succeed in halting
+## the current decline in oil prices.
+##     Oil industry sources said yesterday several Gulf Arab
+## producers had had difficulty selling oil at official OPEC
+## prices but Kuwait has said there are no plans for an emergency
+## meeting of the 13-member organisation.
+##     A traditional Sunday lull in trading due to the European
+## weekend also contributed to the lack of market activity.
+##     Spot-next and one-week rates were put at 6-1/4, 5-3/4 pct
+## after quotes ranging between seven, six yesterday.
+##     One, three, and six-month deposits were quoted unchanged at
+## 6-5/8, 3/8, 7-1/8, 6-7/8 and 7-3/8, 1/8 pct respectively.
+##     The spot riyal was quietly firmer at 3.7495/98 to the
+## dollar after quotes of 3.7500/03 yesterday.
+##  REUTER</code></pre>
+<p>How do topics differ across different sub-corpora?</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>usa_articles <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">meta</span>(reuters, <span class="st">&quot;places&quot;</span>)) <span class="sc">==</span> <span class="st">&quot;usa&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>usa.topic.words <span class="ot">&lt;-</span> <span class="fu">mallet.subset.topic.words</span>(topic.model, </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">subset.docs =</span> usa_articles,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">smoothed=</span><span class="cn">TRUE</span>, </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                                              <span class="at">normalized=</span><span class="cn">TRUE</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>other.topic.words <span class="ot">&lt;-</span> <span class="fu">mallet.subset.topic.words</span>(topic.model, </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">subset.docs =</span> <span class="sc">!</span>usa_articles,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">smoothed=</span><span class="cn">TRUE</span>, </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>                                               <span class="at">normalized=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>How do they compare?</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">mallet.top.words</span>(topic.model, usa.topic.words[<span class="dv">1</span>,]))</span></code></pre></div>
+<pre><code>##       words     weights
+## 1   diamond 0.001042753
+## 2  shamrock 0.001042753
+## 3      corp 0.001042753
+## 4      said 0.001042753
+## 5 effective 0.001042753
+## 6     today 0.001042753</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">mallet.top.words</span>(topic.model, other.topic.words[<span class="dv">1</span>,]))</span></code></pre></div>
+<pre><code>##       words     weights
+## 1   january 0.017231489
+## 2   sources 0.015152620
+## 3     month 0.010994880
+## 4       pct 0.008916011
+## 5   exports 0.008916011
+## 6 yesterday 0.008916011</code></pre>
+<p>This just gives a first example of how to use the mallet R package
+for topic modeling.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
