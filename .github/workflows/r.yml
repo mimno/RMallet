@@ -21,8 +21,13 @@ jobs:
   build:
     runs-on: macos-latest
     strategy:
+      fail-fast: true
+      max-parallel: 2
       matrix:
-        r-version: ['3.6.3', '4.1.1']
+        config:
+          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-20.04, r: '3.6.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +35,7 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
-      - run: java -cp java HelloWorldApp
+      - run: java -version
       - name: Set up R ${{ matrix.r-version }}
         uses: r-lib/actions/setup-r@f57f1301a053485946083d7a45022b278929a78a
         with:
