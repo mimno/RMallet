@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: true
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         config:
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
@@ -43,8 +43,8 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
-          remotes::install_deps(pkgdir = "rpackage", dependencies = TRUE)
+          remotes::install_deps(pkgdir = "mallet", dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
-        run: rcmdcheck::rcmdcheck(path = "rpackage", args = "--no-manual", error_on = "error")
+        run: rcmdcheck::rcmdcheck(path = "mallet", args = "--no-manual", error_on = "error")
         shell: Rscript {0}
