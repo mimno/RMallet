@@ -10,9 +10,10 @@ Description: This package allows you to train topic models in mallet and load
 License: MIT + file LICENSE
 SystemRequirements: java
 Encoding: UTF-8
-Depends: R (>= 3.6.3)
+Depends: 
+    R (>= 3.6.3),
+    rJava
 Imports:
-    rJava,
     checkmate
 Suggests:
     knitr,
