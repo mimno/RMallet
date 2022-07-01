@@ -9,7 +9,6 @@ sotu <- sotu[, c(2,1,3)]
 names(sotu) <- c("year", "paragraph", "text")
 sotu$paragraph <- as.integer(sotu$paragraph)
 
-sotu <- sotu[sotu$year >=1945,]
+sotu <- sotu[sotu$year >= 1946 & sotu$year <= 2008,]
 usethis::use_data(sotu, overwrite = TRUE)
-
 

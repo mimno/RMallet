@@ -59,9 +59,9 @@ test_that(desc="save.mallet",{
   expect_true(any(new.topictype.after.load != new.topictype.before.load))
   expect_true(any(new.topictype.after.load.prior != new.topictype.before.load.prior))
 
-  expect_equal(169281, sum(old.topictype))
-  expect_equal(169281, sum(new.topictype.after.load))
-  expect_equal(169281, sum(new.topictype.before.load))
+  expect_equal(163385, sum(old.topictype))
+  expect_equal(163385, sum(new.topictype.after.load))
+  expect_equal(163385, sum(new.topictype.before.load))
 
 
   expect_equal(new.doctopic.after.load, old.doctopic)
@@ -69,9 +69,9 @@ test_that(desc="save.mallet",{
   expect_true(any(new.doctopic.after.load != new.doctopic.before.load))
   expect_true(any(new.doctopic.after.load.prior != new.doctopic.before.load.prior))
 
-  expect_equal(169281, sum(old.doctopic))
-  expect_equal(169281, sum(new.doctopic.before.load))
-  expect_equal(169281, sum(new.doctopic.after.load))
+  expect_equal(163385, sum(old.doctopic))
+  expect_equal(163385, sum(new.doctopic.before.load))
+  expect_equal(163385, sum(new.doctopic.after.load))
 
 
 

@@ -18,7 +18,7 @@ test_that(desc="getVocabulary",{
   expect_silent(
     vocabulary <- topic.model$getVocabulary()
   )
-  expect_equal(vocabulary[1:3], c("congress", "state", "union"))
+  expect_equal(vocabulary[1:3], c("congress", "united", "states"))
 })
 
 
@@ -112,14 +112,14 @@ test_that(desc="Get parameter matrices",{
     doc.topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
   )
 
-  expect_equal(dim(doc.topics), c(7625,10))
-  expect_equal(object = rowSums(doc.topics), expected = rep(1,7625), tolerance = .00000000001, scale = 1)
+  expect_equal(dim(doc.topics), c(7347,10))
+  expect_equal(object = rowSums(doc.topics), expected = rep(1,7347), tolerance = .00000000001, scale = 1)
 
   expect_silent(
     topic.words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
   )
 
-  expect_equal(dim(topic.words), c(10, 14815))
+  expect_equal(dim(topic.words), c(10, 14474))
   expect_equal(object = rowSums(topic.words), expected = rep(1,10), tolerance = .00000000001, scale = 1)
 
 })
@@ -168,8 +168,8 @@ test_that(desc="mallet.subset",{
                                                    normalized=TRUE)
   })
 
-  expect_equal(dim(modern.topic.words), c(10, 14815))
-  expect_equal(dim(not.modern.topic.words), c(10, 14815))
+  expect_equal(dim(modern.topic.words), c(10, 14474))
+  expect_equal(dim(not.modern.topic.words), c(10, 14474))
   expect_true(any(modern.topic.words != not.modern.topic.words))
 })
 
