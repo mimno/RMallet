@@ -4,7 +4,7 @@ mallet
 [![development-branch](https://github.com/mimno/RMallet/actions/workflows/r.yml/badge.svg?branch=development)](https://github.com/mimno/RMallet/actions/workflows/r.yml)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mallet)](https://cran.r-project.org/package=pxweb)
 [![Downloads](http://cranlogs.r-pkg.org/badges/mallet)](https://cran.r-project.org/package=pxweb)
-[![cran version](http://www.r-pkg.org/badges/version/mallet)](http://cran.rstudio.com/web/packages/mallet)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/mallet)](https://cran.r-project.org/package=mallet)
 
 mallet is an R package to interface with the Java machine learning tool MALLET. More information about Mallet can be found [here](http://mallet.cs.umass.edu/).
 
