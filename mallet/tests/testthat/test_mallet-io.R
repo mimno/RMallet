@@ -48,7 +48,7 @@ test_that(desc="load.mallet",{
 
   expect_silent(load.mallet.state(topic.model = new.topic.model, state.file = state_file))
 
-  expect_equal(unlink(state_file), 0)
+  expect_true(file.remove(state_file))
   expect_true(!file.exists(state_file))
 
   new.doctopic.after.load <- mallet.doc.topics(new.topic.model, smoothed=FALSE, normalized=FALSE)
