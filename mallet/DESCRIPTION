@@ -11,9 +11,9 @@ License: MIT + file LICENSE
 SystemRequirements: java
 Encoding: UTF-8
 Depends: 
-    R (>= 3.6.3),
-    rJava
+    R (>= 3.6.3)
 Imports:
+    rJava,
     checkmate
 Suggests:
     knitr,

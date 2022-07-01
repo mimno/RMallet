@@ -22,12 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      max-parallel: 1
+      max-parallel: 5
       matrix:
         config:
           - {os: ubuntu-latest, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-latest, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-latest, r: '3.6.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest, r: 'release'}
 
     steps:
       - uses: actions/checkout@v3
@@ -40,6 +42,7 @@ jobs:
         with:
           pandoc-version: '2.17.1' # The pandoc version to download (if necessary) and use.
       - name: Install libcurl
+        if: runner.os != 'Windows'
         run: |
           sudo apt-get update
           sudo apt-get install libcurl4-openssl-dev
@@ -48,6 +51,7 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
       - name: R CMD javareconf
+        if: runner.os != 'Windows'
         run: |
           sudo R CMD javareconf
       - name: Cache R packages
