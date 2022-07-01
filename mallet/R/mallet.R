@@ -425,12 +425,12 @@ mallet.topic.labels <- function(topic.model, topic.words, num.top.words=3) {
 #' }
 #'
 #' @export
-mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3) {
+mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3, ...) {
   ## transpose and normalize the doc topics
   topic.docs <- t(doc.topics)
   topic.docs <- topic.docs / rowSums(topic.docs)
 
-  stats::hclust(balance * stats::dist(topic.words) + (1.0 - balance) * stats::dist(topic.docs))
+  stats::hclust(balance * stats::dist(topic.words) + (1.0 - balance) * stats::dist(topic.docs), ...)
 }
 
 #' @title

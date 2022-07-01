@@ -4,7 +4,7 @@
 \alias{mallet.topic.hclust}
 \title{Return a hierarchical clustering of topics}
 \usage{
-mallet.topic.hclust(doc.topics, topic.words, balance = 0.3)
+mallet.topic.hclust(doc.topics, topic.words, balance = 0.3, ...)
 }
 \arguments{
 \item{doc.topics}{A documents by topics matrix of topic probabilities.}
