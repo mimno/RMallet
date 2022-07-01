@@ -1,30 +1,39 @@
 context("mallet-functionality")
 
 data(sotu)
-head(sotu)
 stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
 
-sotu.instances <-
-  mallet.import(id.array = row.names(sotu),
-                text.array = sotu[["text"]],
-                stoplist = stopwords_en,
-                token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
-topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
-topic.model$loadDocuments(sotu.instances)
-topic.model$train(20)
-
-
-
 test_that(desc="getVocabulary",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     vocabulary <- topic.model$getVocabulary()
   )
-  expect_equal(vocabulary[1:3], c("fellow-citizens", "senate", "house"))
+  expect_equal(vocabulary[1:3], c("congress", "state", "union"))
 })
 
 
 test_that(desc="mallet.word.freqs",{
   skip("Potential bug")
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     word.freqs <- mallet.word.freqs(topic.model)
   )
@@ -35,12 +44,34 @@ test_that(desc="mallet.word.freqs",{
 
 
 test_that(desc="setAlphaOptimization",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     topic.model$setAlphaOptimization(20, 50)
   )
 })
 
 test_that(desc="train optimized",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     topic.model$train(100)
   )
@@ -48,6 +79,17 @@ test_that(desc="train optimized",{
 
 
 test_that(desc="maximize",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     topic.model$maximize(10)
   )
@@ -55,23 +97,45 @@ test_that(desc="maximize",{
 
 
 test_that(desc="Get parameter matrices",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     doc.topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
   )
 
-  expect_equal(dim(doc.topics), c(19254,10))
-  expect_equal(object = rowSums(doc.topics), expected = rep(1,19254), tolerance = .00000000001, scale = 1)
+  expect_equal(dim(doc.topics), c(7625,10))
+  expect_equal(object = rowSums(doc.topics), expected = rep(1,7625), tolerance = .00000000001, scale = 1)
 
   expect_silent(
     topic.words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
   )
 
-  expect_equal(dim(topic.words), c(10, 26311))
+  expect_equal(dim(topic.words), c(10, 14815))
   expect_equal(object = rowSums(topic.words), expected = rep(1,10), tolerance = .00000000001, scale = 1)
 
 })
 
 test_that(desc="mallet.top.words",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
   expect_silent(
     top.words <- mallet.top.words(topic.model, word.weights = mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)[2,], num.top.words = 5)
   )
@@ -81,7 +145,18 @@ test_that(desc="mallet.top.words",{
 
 
 test_that(desc="mallet.subset",{
-  modern_times <- sotu$year > 1899
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = stopwords_en,
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(20)
+
+  modern_times <- sotu$year > 1975
   expect_silent({
     modern.topic.words <- mallet.subset.topic.words(topic.model,
                                                  subset.docs = modern_times,
@@ -93,8 +168,8 @@ test_that(desc="mallet.subset",{
                                                    normalized=TRUE)
   })
 
-  expect_equal(dim(modern.topic.words), c(10, 26311))
-  expect_equal(dim(not.modern.topic.words), c(10, 26311))
+  expect_equal(dim(modern.topic.words), c(10, 14815))
+  expect_equal(dim(not.modern.topic.words), c(10, 14815))
   expect_true(any(modern.topic.words != not.modern.topic.words))
 })
 
