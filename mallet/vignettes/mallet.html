@@ -12,7 +12,7 @@
 
 <meta name="author" content="David Mimno and Måns Magnusson" />
 
-<meta name="date" content="2022-06-30" />
+<meta name="date" content="2022-07-01" />
 
 <title>Introduction to R mallet</title>
 
@@ -334,7 +334,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to R mallet</h1>
 <h4 class="author">David Mimno and Måns Magnusson</h4>
-<h4 class="date">2022-06-30</h4>
+<h4 class="date">2022-07-01</h4>
 
 
 
@@ -370,8 +370,8 @@ adresses from 1790 to 2009.</p>
 ##     intersect, setdiff, setequal, union</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sotu)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
-<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;                                                                                                                                                                                                                                    
-## [2] &quot;In meeting you again I feel much satisfaction in being able to repeat my  congratulations on the favorable prospects which continue to distinguish  our public affairs. The abundant fruits of another year have blessed our  country with plenty and with the means of a flourishing commerce.  &quot;</code></pre>
+<pre><code>## [1] &quot;To the Congress of the United States:  &quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+## [2] &quot;A quarter century ago the Congress decided that it could no longer consider  the financial programs of the various departments on a piecemeal basis.  Instead it has called on the President to present a comprehensive Executive  Budget. The Congress has shown its satisfaction with that method by  extending the budget system and tightening its controls. The bigger and  more complex the Federal Program, the more necessary it is for the Chief  Executive to submit a single budget for action by the Congress.  &quot;</code></pre>
 <p>Mallet comes with five different stop list files.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span>(<span class="fu">system.file</span>(<span class="st">&quot;stoplists/&quot;</span>, <span class="at">package =</span> <span class="st">&quot;mallet&quot;</span>))</span></code></pre></div>
 <pre><code>## [1] &quot;de.txt&quot; &quot;en.txt&quot; &quot;fi.txt&quot; &quot;fr.txt&quot; &quot;jp.txt&quot; &quot;README&quot;</code></pre>
@@ -405,17 +405,16 @@ instance list file that we build from the command-line tools.</p>
 may be useful in further curating the stopword list.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>vocabulary <span class="ot">&lt;-</span> topic.model<span class="sc">$</span><span class="fu">getVocabulary</span>()</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vocabulary)</span></code></pre></div>
-<pre><code>## [1] &quot;fellow-citizens&quot; &quot;senate&quot;          &quot;house&quot;           &quot;representatives&quot;
-## [5] &quot;meeting&quot;         &quot;feel&quot;</code></pre>
+<pre><code>## [1] &quot;congress&quot; &quot;united&quot;   &quot;states&quot;   &quot;quarter&quot;  &quot;century&quot;  &quot;ago&quot;</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>word.freqs <span class="ot">&lt;-</span> <span class="fu">mallet.word.freqs</span>(topic.model)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(word.freqs)</span></code></pre></div>
-<pre><code>##             words term.freq doc.freq
-## 1 fellow-citizens        16       16
-## 2          senate       572      514
-## 3           house       485      435
-## 4 representatives       471      429
-## 5         meeting       198      186
-## 6            feel       192      188</code></pre>
+<pre><code>##      words term.freq doc.freq
+## 1 congress         0        0
+## 2   united     14908   136815
+## 3   states      1617     9650
+## 4  quarter         5     1582
+## 5  century         6      358
+## 6      ago         4      119</code></pre>
 <p>Optimize hyperparameters ( and ) every 20 iterations, after 50
 burn-in iterations.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</span></code></pre></div>
@@ -436,16 +435,16 @@ nothing has exactly 0 probability.</p>
 <p>What are the top words in topic 2? Notice that R indexes from 1 and
 Java from 0, so this will be the topic that mallet called topic 1.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.top.words</span>(topic.model, <span class="at">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="at">num.top.words =</span> <span class="dv">5</span>)</span></code></pre></div>
-<pre><code>##        words    weights
-## 1   congress 0.03297508
-## 2       made 0.01389407
-## 3    service 0.01136034
-## 4 department 0.01128829
-## 5     public 0.01084399</code></pre>
+<pre><code>##     words    weights
+## 1 nations 0.02519915
+## 2   world 0.02354534
+## 3  united 0.02082141
+## 4  states 0.01551948
+## 5   peace 0.01401159</code></pre>
 <p>Show the first document with at least 5% tokens belonging to topic
 2.</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][doc.topics[,<span class="dv">2</span>] <span class="sc">&gt;</span> <span class="fl">0.05</span>][<span class="dv">1</span>]</span></code></pre></div>
-<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;</code></pre>
+<pre><code>## [1] &quot;OF DECISION  &quot;</code></pre>
 </div>
 <div id="save-and-load-topic-states" class="section level2">
 <h2>Save and load topic states</h2>
@@ -470,14 +469,14 @@ exact same alpha prior.</p>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>doc.topics.counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
 <pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-## [1,]    0    4    0    0    0    0    0    0    0     0
-## [2,]   19    0    0    0    0    0    0    1    0     0
-## [3,]   34    0    0    0    0    0    0    6    1     0</code></pre>
+## [1,]    0    0    0    0    0    0    0    0    3     0
+## [2,]    5    0    0    0    0    4   24    0    4     0
+## [3,]    0    0    0    0    0    5   22    0    0    18</code></pre>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.doc.topics</span>(new.topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
 <pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-## [1,]    0    4    0    0    0    0    0    0    0     0
-## [2,]   19    0    0    0    0    0    0    1    0     0
-## [3,]   34    0    0    0    0    0    0    6    1     0</code></pre>
+## [1,]    0    0    0    0    0    0    0    0    3     0
+## [2,]    5    0    0    0    0    4   24    0    4     0
+## [3,]    0    0    0    0    0    5   22    0    0    18</code></pre>
 <p>This just gives a first example of how to use the mallet R package
 for topic modeling.</p>
 </div>
