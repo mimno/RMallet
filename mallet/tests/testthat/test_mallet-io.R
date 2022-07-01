@@ -56,8 +56,6 @@ test_that(desc="load.mallet",{
   new.doctopic.after.load.prior <- mallet.doc.topics(new.topic.model, smoothed=TRUE, normalized=FALSE)
   new.topictype.after.load.prior <- mallet.topic.words(new.topic.model, smoothed=TRUE, normalized=FALSE)
 
-
-  skip("This is probably a bug in Mallet RTopicModel class")
   expect_equal(new.topictype.after.load, old.topictype)
   expect_equal(new.topictype.after.load.prior, old.topictype.prior)
   expect_true(any(new.topictype.after.load != new.topictype.before.load))
