@@ -94,7 +94,7 @@ test_that(desc="mallet.instances io",{
   topic.model$loadDocuments(new.sotu.instances)
   topic.model$train(20)
 
-  expect_equal(unlink(instance_file), 0)
+  expect_equal(unlink(instance_file, force = TRUE), 0)
   expect_true(!file.exists(instance_file))
 
 })
