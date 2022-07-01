@@ -61,9 +61,9 @@ NULL
 
 #' State of the Union Adresses.
 #'
-#' A dataset containing State of the Union Adresses by paragraph from 1945 to 2009.
+#' A dataset containing State of the Union Adresses by paragraph from 1946 to 2008.
 #'
-#' @format A \code{\link[tibble]{tibble}} \code{data.frame} with 7625 rows and 3 variables:
+#' @format A \code{\link[tibble]{tibble}} \code{data.frame} with 7347 rows and 3 variables:
 #' \describe{
 #'   \item{year}{Year of the adress.}
 #'   \item{paragraph}{The paragraph of the address.}
