@@ -14,11 +14,10 @@ mallet.topic.labels(topic.model, topic.words, num.top.words = 3)
 \item{num.top.words}{The number of words to include for each topic}
 }
 \description{
-This function returns a vector of strings, one for each topic, with the 
+This function returns a vector of strings, one for each topic, with the
 most probable words in that topic separated by spaces.
 }
 \seealso{
-\code{\link{mallet.topic.words}} produces topic-word weights. 
+\code{\link{mallet.topic.words}} produces topic-word weights.
 \code{\link{mallet.top.words}} produces a data frame for a single topic.
 }
-

@@ -17,4 +17,3 @@ The state contain hyperparameters \eqn{\alpha} and \eqn{\beta} together with top
 
 The state file can be read into R using the function
 }
-

@@ -15,4 +15,3 @@ load.mallet.state(topic.model, state.file)
 This reads writes a current sampling state of mallet to file. The state contain 
 hyperparameters \eqn{\alpha} and \eqn{\beta} together with topic indicators.
 }
-

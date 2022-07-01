@@ -1,6 +1,6 @@
 ---
 title: "Introduction to R mallet"
-author: "David Mimno, Måns Magnusson"
+author: "David Mimno and Måns Magnusson"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -11,7 +11,9 @@ vignette: >
 
 ## Installation
 
-The ```mallet``` R package is available on CRAN. To install, simply use ```install.packages()```
+To use the mallet R package, we need to use `rJava`, an R package for using Java within R (to access the mallet Java code). See details at [github.com/s-u/rJava](https://github.com/s-u/rJava).
+
+Next, install the ```mallet``` R package from CRAN. To install, simply use ```install.packages()```
 
 ```{r, eval=FALSE}
 install.packages("mallet")
@@ -165,5 +167,4 @@ doc.topics.counts[1:3, 1:10]
 mallet.doc.topics(new.topic.model, smoothed=FALSE, normalized=FALSE)[1:3, 1:10]
 ```
 
-
-
+This just gives a first example of how to use the mallet R package for topic modeling.

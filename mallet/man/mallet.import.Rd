@@ -4,8 +4,13 @@
 \alias{mallet.import}
 \title{Import text documents into Mallet format}
 \usage{
-mallet.import(id.array = NULL, text.array, stoplist = "",
-  preserve.case = FALSE, token.regexp = "[\\\\p{L}]+")
+mallet.import(
+  id.array = NULL,
+  text.array,
+  stoplist = "",
+  preserve.case = FALSE,
+  token.regexp = "[\\\\p{L}]+"
+)
 }
 \arguments{
 \item{id.array}{An array of document IDs. Default is \code{text.array} index.}
@@ -13,25 +18,25 @@ mallet.import(id.array = NULL, text.array, stoplist = "",
 \item{text.array}{A character vector with each element containing a document.}
 
 \item{stoplist}{The name of a file containing stopwords (words to ignore), one per line, or a character vector containing stop words.
-If the file is not in the current working directory, you may need to include a full path. 
+If the file is not in the current working directory, you may need to include a full path.
 Default is no stoplist.}
 
 \item{preserve.case}{By default, the input text is converted to all lowercase.}
 
-\item{token.regexp}{A quoted string representing a regular expression that defines a token. The default 
-is one or more unicode letter: "[\\\\p\{L\}]+". Note that special characters must 
+\item{token.regexp}{A quoted string representing a regular expression that defines a token. The default
+is one or more unicode letter: "[\\\\p\{L\}]+". Note that special characters must
 have double backslashes.}
 }
 \description{
-This function takes an array of document IDs and text files (as character strings) 
+This function takes an array of document IDs and text files (as character strings)
 and converts them into a Mallet instance list.
 }
 \examples{
 \dontrun{
 data(sotu)
 stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
-mallet.instances <- 
-  mallet.import(text.array = sotu[["text"]], 
+mallet.instances <-
+  mallet.import(text.array = sotu[["text"]],
   stoplist = stopwords_en,
   token.regexp = "\\\\\\\\p{L}[\\\\\\\\p{L}\\\\\\\\p{P}]+\\\\\\\\p{L}")
 }
@@ -39,4 +44,3 @@ mallet.instances <-
 \seealso{
 \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.
 }
-

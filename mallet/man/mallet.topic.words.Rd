@@ -9,15 +9,14 @@ mallet.topic.words(topic.model, normalized = FALSE, smoothed = FALSE)
 \arguments{
 \item{topic.model}{The model returned by \code{MalletLDA}}
 
-\item{normalized}{If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE}, 
-values will be integers (possibly plus the smoothing constant) representing the 
+\item{normalized}{If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE},
+values will be integers (possibly plus the smoothing constant) representing the
 actual number of words of each type in the topics.}
 
-\item{smoothed}{If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+\item{smoothed}{If \code{TRUE}, add the smoothing parameter for the model (initial value specified as
 \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.}
 }
 \description{
-This function returns a matrix with one row for every topic 
+This function returns a matrix with one row for every topic
 and one column for every word in the vocabulary.
 }
-

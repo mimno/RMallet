@@ -9,15 +9,14 @@ mallet.doc.topics(topic.model, normalized = FALSE, smoothed = FALSE)
 \arguments{
 \item{topic.model}{The model returned by \code{MalletLDA}}
 
-\item{normalized}{If \code{TRUE}, normalize the rows so that each document sums to one. If \code{FALSE}, 
-values will be integers (possibly plus the smoothing constant) representing the 
+\item{normalized}{If \code{TRUE}, normalize the rows so that each document sums to one. If \code{FALSE},
+values will be integers (possibly plus the smoothing constant) representing the
 actual number of words of each topic in the documents.}
 
-\item{smoothed}{If \code{TRUE}, add the smoothing parameter for the model (initial value specified as 
+\item{smoothed}{If \code{TRUE}, add the smoothing parameter for the model (initial value specified as
 \code{alpha.sum} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.}
 }
 \description{
-This function returns a matrix with one row for every document and one 
+This function returns a matrix with one row for every document and one
 column for every topic.
 }
-

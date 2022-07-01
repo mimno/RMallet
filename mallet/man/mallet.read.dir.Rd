@@ -10,7 +10,7 @@ mallet.read.dir(Dir)
 \item{Dir}{The path to a directory containing one document per file.}
 }
 \description{
-This function takes a directory path as its only argument and returns a 
+This function takes a directory path as its only argument and returns a
  \code{data.frame} with two columns: <id> & <text>,
  which can be passed to the \code{mallet.import} function.
  This \code{data.frame} has as many rows as there are files in the \code{Dir}.
@@ -21,16 +21,15 @@ This function was contributed to RMallet by Dan Bowen.
 \examples{
 \dontrun{
 documents <- mallet.read.dir(Dir)
-mallet.instances <- 
-  mallet.import(documents$id, documents$text, "en.txt", 
+mallet.instances <-
+  mallet.import(documents$id, documents$text, "en.txt",
                 token.regexp = "\\\\\\\\p{L}[\\\\\\\\p{L}\\\\\\\\p{P}]+\\\\\\\\p{L}")
 }
 
 }
-\author{
-Dan Bowen
-}
 \seealso{
 \code{\link{mallet.import}}
 }
-
+\author{
+Dan Bowen
+}

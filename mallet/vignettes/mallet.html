@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="David Mimno and Måns Magnusson" />
+
+<meta name="date" content="2022-06-30" />
+
+<title>Introduction to R mallet</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to R mallet</h1>
+<h4 class="author">David Mimno and Måns Magnusson</h4>
+<h4 class="date">2022-06-30</h4>
+
+
+
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>To use the mallet R package, we need to use <code>rJava</code>, an R
+package for using Java within R (to access the mallet Java code). See
+details at <a href="https://github.com/s-u/rJava">github.com/s-u/rJava</a>.</p>
+<p>Next, install the <code>mallet</code> R package from CRAN. To
+install, simply use <code>install.packages()</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;mallet&quot;</span>)</span></code></pre></div>
+</div>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<p>Depending of the size of your data it can be so that you need
+increase the Java virtual machine (JVM) heap memory to handle larger
+corpora. To do this you need specify how much memory you want to
+allocate to the JVM using the <code>Xmx</code> flag. Below is an example
+of allocating 4 gB to the JVM.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">&quot;-Xmx4g&quot;</span>)</span></code></pre></div>
+<p>To load the package, simply use <code>library()</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mallet)</span></code></pre></div>
+<p>We start out by using the example data set of the State of the Union
+adresses from 1790 to 2009.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sotu)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
+<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;                                                                                                                                                                                                                                    
+## [2] &quot;In meeting you again I feel much satisfaction in being able to repeat my  congratulations on the favorable prospects which continue to distinguish  our public affairs. The abundant fruits of another year have blessed our  country with plenty and with the means of a flourishing commerce.  &quot;</code></pre>
+<p>Mallet comes with five different stop list files.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span>(<span class="fu">system.file</span>(<span class="st">&quot;stoplists/&quot;</span>, <span class="at">package =</span> <span class="st">&quot;mallet&quot;</span>))</span></code></pre></div>
+<pre><code>## [1] &quot;de.txt&quot; &quot;en.txt&quot; &quot;fi.txt&quot; &quot;fr.txt&quot; &quot;jp.txt&quot; &quot;README&quot;</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>stopwords_en <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;stoplists/en.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;mallet&quot;</span>)</span></code></pre></div>
+<p>As a first step we need to create a LDA trainer object and supply the
+trainer with documents. We start out by creating a mallet instance list
+object.</p>
+<p>This function has a few extra options (whether to lowercase, how we
+define a token). See <code>?mallet.import</code> for details.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sotu.instances <span class="ot">&lt;-</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mallet.import</span>(<span class="at">id.array =</span> <span class="fu">row.names</span>(sotu), </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">stoplist =</span> stopwords_en,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">token.regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">p{L}[</span><span class="sc">\\</span><span class="st">p{L}</span><span class="sc">\\</span><span class="st">p{P}]+</span><span class="sc">\\</span><span class="st">p{L}&quot;</span>)</span></code></pre></div>
+<p>If the data is already cleaned and we just want to use the index of
+<code>text.array</code> we can simply just supply the
+<code>text.array</code>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sotu.instances.short <span class="ot">&lt;-</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mallet.import</span>(<span class="at">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]])</span></code></pre></div>
+<p>It is also possible to supply stop words as a character vector.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>stop_vector <span class="ot">&lt;-</span> <span class="fu">readLines</span>(stopwords_en)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sotu.instances.short <span class="ot">&lt;-</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mallet.import</span>(<span class="at">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">stoplist =</span> stop_vector)</span></code></pre></div>
+<p>To fit a model we first need to create a topic trainer object.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>topic.model <span class="ot">&lt;-</span> <span class="fu">MalletLDA</span>(<span class="at">num.topics=</span><span class="dv">10</span>, <span class="at">alpha.sum =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="fl">0.1</span>)</span></code></pre></div>
+<p>Load our documents. We could also pass in the filename of a saved
+instance list file that we build from the command-line tools.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">loadDocuments</span>(sotu.instances)</span></code></pre></div>
+<p>Get the vocabulary, and some statistics about word frequencies. These
+may be useful in further curating the stopword list.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>vocabulary <span class="ot">&lt;-</span> topic.model<span class="sc">$</span><span class="fu">getVocabulary</span>()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vocabulary)</span></code></pre></div>
+<pre><code>## [1] &quot;fellow-citizens&quot; &quot;senate&quot;          &quot;house&quot;           &quot;representatives&quot;
+## [5] &quot;meeting&quot;         &quot;feel&quot;</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>word.freqs <span class="ot">&lt;-</span> <span class="fu">mallet.word.freqs</span>(topic.model)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(word.freqs)</span></code></pre></div>
+<pre><code>##             words term.freq doc.freq
+## 1 fellow-citizens        16       16
+## 2          senate       572      514
+## 3           house       485      435
+## 4 representatives       471      429
+## 5         meeting       198      186
+## 6            feel       192      188</code></pre>
+<p>Optimize hyperparameters ( and ) every 20 iterations, after 50
+burn-in iterations.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</span></code></pre></div>
+<p>Now train a model. Note that hyperparameter optimization is on, by
+default. We can specify the number of iterations. Here we’ll use a
+large-ish round number.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">train</span>(<span class="dv">200</span>)</span></code></pre></div>
+<p>We can also run through a few iterations where we pick the best topic
+for each token, rather than sampling from the posterior
+distribution.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">maximize</span>(<span class="dv">10</span>)</span></code></pre></div>
+<p>Get the probability of topics in documents and the probability of
+words in topics. By default, these functions return raw word counts.
+Here we want probabilities, so we normalize, and add “smoothing” so that
+nothing has exactly 0 probability.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>doc.topics <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>topic.words <span class="ot">&lt;-</span> <span class="fu">mallet.topic.words</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>What are the top words in topic 2? Notice that R indexes from 1 and
+Java from 0, so this will be the topic that mallet called topic 1.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.top.words</span>(topic.model, <span class="at">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="at">num.top.words =</span> <span class="dv">5</span>)</span></code></pre></div>
+<pre><code>##        words    weights
+## 1   congress 0.03297508
+## 2       made 0.01389407
+## 3    service 0.01136034
+## 4 department 0.01128829
+## 5     public 0.01084399</code></pre>
+<p>Show the first document with at least 5% tokens belonging to topic
+2.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][doc.topics[,<span class="dv">2</span>] <span class="sc">&gt;</span> <span class="fl">0.05</span>][<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;</code></pre>
+</div>
+<div id="save-and-load-topic-states" class="section level2">
+<h2>Save and load topic states</h2>
+<p>We can also store our current topic model state to use it for
+postprocessing. We can store the state file either as a txt file or a
+compressed gzip file.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>state_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;temp_mallet_state.gz&quot;</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save.mallet.state</span>(<span class="at">topic.model =</span> topic.model, <span class="at">state.file =</span> state_file)</span></code></pre></div>
+<p>We also store the topic counts per document and then remove the old
+model.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>doc.topics.counts <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(topic.model)</span></code></pre></div>
+<p>To initialize a model with the sampled topic indicators one need to
+create a new model, load the same data and then load the topic
+indicators. Unfortunately it is not possible to set the alpha parameter
+vector so it is not currently possible to initialize the model with the
+exact same alpha prior.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>new.topic.model <span class="ot">&lt;-</span> <span class="fu">MalletLDA</span>(<span class="at">num.topics=</span><span class="dv">10</span>, <span class="at">alpha.sum =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="fl">0.1</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>new.topic.model<span class="sc">$</span><span class="fu">loadDocuments</span>(sotu.instances)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load.mallet.state</span>(<span class="at">topic.model =</span> new.topic.model, <span class="at">state.file =</span> state_file)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>doc.topics.counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    0    4    0    0    0    0    0    0    0     0
+## [2,]   19    0    0    0    0    0    0    1    0     0
+## [3,]   34    0    0    0    0    0    0    6    1     0</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.doc.topics</span>(new.topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+## [1,]    0    4    0    0    0    0    0    0    0     0
+## [2,]   19    0    0    0    0    0    0    1    0     0
+## [3,]   34    0    0    0    0    0    0    6    1     0</code></pre>
+<p>This just gives a first example of how to use the mallet R package
+for topic modeling.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
