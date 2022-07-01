@@ -41,6 +41,7 @@ jobs:
         with:
           extra-packages: any::covr
           needs: coverage
+          working-directory: mallet
 
       - name: Test coverage
         run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"), quiet = FALSE)
