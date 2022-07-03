@@ -2,7 +2,7 @@ context("mallet-io")
 
 data(sotu)
 
-test_that(desc="save.mallet",{
+test_that(desc="Save and load state files",{
   skip_on_cran()
 
   sotu.instances <-
@@ -91,4 +91,31 @@ test_that(desc="save.mallet",{
   expect_equal(unlink(instance_file, force = TRUE), 0)
   expect_true(!file.exists(instance_file))
 
+})
+
+
+test_that(desc="Save and load topic model",{
+  skip_on_cran()
+
+  sotu.instances <-
+    mallet.import(id.array = row.names(sotu),
+                  text.array = sotu[["text"]],
+                  stoplist = mallet_stoplist_file_path("en"),
+                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+  topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+  topic.model$loadDocuments(sotu.instances)
+  topic.model$train(100)
+
+  model_file <- file.path(tempdir(), "temp_mallet.model")
+  expect_silent(mallet.topic.write(topic.model, model_file))
+  expect_silent(read.topic.model <- mallet.topic.read(model_file))
+  expect_equal(read.topic.model, topic.model)
+
+  dtm1 <- mallet.doc.topics(topic.model)
+  dtm2 <- mallet.doc.topics(read.topic.model)
+  expect_equal(dtm1, dtm2)
+
+  dtw1 <- mallet.topic.words(topic.model)
+  dtw2 <- mallet.topic.words(read.topic.model)
+  expect_equal(dtw1, dtw2)
 })
