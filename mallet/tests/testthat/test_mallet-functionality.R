@@ -172,3 +172,9 @@ test_that(desc="mallet.subset",{
   expect_true(any(modern.topic.words != not.modern.topic.words))
 })
 
+test_that(desc="mallet_jar",{
+  skip_on_cran()
+
+  expect_equal(mallet_jar(), "rmallet-202108.jar")
+})
+
