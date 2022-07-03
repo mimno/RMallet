@@ -1,7 +1,6 @@
 context("mallet-train-model")
 
 data(sotu)
-stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
 
 test_that(desc="mallet.import",{
   skip_on_cran()
@@ -10,7 +9,7 @@ test_that(desc="mallet.import",{
     sotu.instances <-
       mallet.import(id.array = row.names(sotu),
                     text.array = sotu[["text"]],
-                    stoplist = stopwords_en,
+                    stoplist = mallet_stoplist_file_path("en"),
                     token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   })
   expect_is(sotu.instances, "jobjRef")
@@ -30,7 +29,7 @@ test_that(desc="Train model",{
     sotu.instances <-
       mallet.import(id.array = row.names(sotu),
                     text.array = sotu[["text"]],
-                    stoplist = stopwords_en,
+                    stoplist = mallet_stoplist_file_path("en"),
                     token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   )
 
