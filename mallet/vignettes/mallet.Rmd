@@ -89,7 +89,7 @@ Load our documents. We could also pass in the filename of a saved instance list 
 topic.model$loadDocuments(sotu.instances)
 ```
 
-Get the vocabulary, and some statistics about word frequencies. These may be useful in further curating the stopword list.
+To get the vocabulary of the model, we use the method `getVocabulary()`. Thevocabulary may be useful in further curating the stopword list.
 
 ```{r}
 vocabulary <- topic.model$getVocabulary()
