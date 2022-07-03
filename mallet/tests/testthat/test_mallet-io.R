@@ -108,7 +108,7 @@ test_that(desc="Save and load topic model",{
 
   model_file <- file.path(tempdir(), "temp_mallet.model")
   expect_silent(mallet.topic.model.write(topic.model, model_file))
-  expect_silent(read.topic.model <- mallet.topic..model.read(model_file))
+  expect_silent(read.topic.model <- mallet.topic.model.read(model_file))
   expect_equal(read.topic.model, topic.model)
 
   dtm1 <- mallet.doc.topics(topic.model)
