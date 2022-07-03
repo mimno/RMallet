@@ -21,19 +21,19 @@ install.packages("mallet")
 
 ## Usage
 
-Depending of the size of your data it can be so that you need increase the Java virtual machine (JVM) heap memory to handle larger corpora. To do this you need specify how much memory you want to allocate to the JVM using the ```Xmx``` flag. Below is an example of allocating 4 gB to the JVM. 
+Depending on the size of your data, it can be so that you need to increase the Java virtual machine (JVM) heap memory to handle larger corpora. To do this, you need to specify how much memory you want to allocate to the JVM using the ```Xmx``` flag. Below is an example of allocating 4 Gb to the JVM. 
 
 ```{r, eval=FALSE}
 options(java.parameters = "-Xmx4g")
 ```
 
-To load the package, simply use ```library()```.
+To load the package, use ```library()```.
 
 ```{r}
 library(mallet)
 ```
 
-We start out by using the example data set of the State of the Union adresses from 1946 to 2008.
+We start by using the example data set of the State of the Union addresses from 1946 to 2000.
 
 ```{r}
 library(dplyr)
@@ -48,9 +48,9 @@ mallet_supported_stoplists()
 stopwords_en_file_path <- mallet_stoplist_file_path("en")
 ```
 
-As a first step we need to create a LDA trainer object and supply the trainer with documents. We start out by creating a mallet instance list object. 
+As a first step, we need to create an LDA trainer object and supply the trainer with documents. We start by creating a mallet instance list object. 
 
-This function has a few extra options (whether to lowercase, how we define a token). See ```?mallet.import``` for details.
+This function has a few extra options (whether to lowercase or how we define a token). See ```?mallet.import``` for details.
 
 ```{r}
 sotu.instances <- 
@@ -60,7 +60,7 @@ sotu.instances <-
                 token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
 ```
 
-If the data is already cleaned and we just want to use the index of `text.array` we can simply just supply the `text.array`.
+If the data is already cleaned and we want to use the index of `text.array`, we can just supply the `text.array`.
 
 ```{r}
 sotu.instances.short <- 
@@ -77,19 +77,19 @@ sotu.instances.short <-
 ```
 
 
-To fit a model we first need to create a topic trainer object.
+We first need to create a topic trainer object to fit a model.
 
 ```{r}
 topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
 ```
 
-Load our documents. We could also pass in the filename of a saved instance list file that we build from the command-line tools.
+Load our documents. We could also pass in the filename of a saved instance list file we build from the command-line tools.
 
 ```{r}
 topic.model$loadDocuments(sotu.instances)
 ```
 
-To get the vocabulary of the model, we use the method `getVocabulary()`. Thevocabulary may be useful in further curating the stopword list.
+To get the model's vocabulary, we use the method `getVocabulary()`. The vocabulary may be helpful in further curating the stopword list.
 
 ```{r}
 vocabulary <- topic.model$getVocabulary()
@@ -102,19 +102,19 @@ Optimize hyperparameters (\code{alpha} and \code{beta}) every 20 iterations, aft
 topic.model$setAlphaOptimization(20, 50)
 ```
 
-Now train a model. Note that hyperparameter optimization is on, by default. We can specify the number of iterations. Here we'll use a large-ish round number.
+Now train a model. Note that hyperparameter optimization is on by default. We can specify the number of iterations. Here we'll use a large-ish round number.
 
 ```{r}
 topic.model$train(200)
 ```
 
-We can also run through a few iterations where we pick the best topic for each token, rather than sampling from the posterior distribution.
+We can also run through a few iterations where we pick the best topic for each token rather than sampling from the posterior distribution.
 
 ```{r}
 topic.model$maximize(10)
 ```
 
-Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities, so we normalize, and add "smoothing" so that nothing has exactly 0 probability.
+Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities, so we normalize and add "smoothing" so that nothing has exactly 0 probability.
 
 ```{r}
 doc.topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
@@ -146,7 +146,7 @@ state_file <- file.path(tempdir(), "temp_mallet_state.gz")
 save.mallet.state(topic.model = topic.model, state.file = state_file)
 ```
 
-We also store the topic counts per document and then remove the old model.
+We also store the topic counts per document and remove the old model.
 
 ```{r}
 doc.topics.counts <- mallet.doc.topics(topic.model, smoothed=FALSE, normalized=FALSE)
@@ -154,15 +154,28 @@ doc.topics.counts <- mallet.doc.topics(topic.model, smoothed=FALSE, normalized=F
 rm(topic.model)
 ```
 
-To initialize a model with the sampled topic indicators one need to create a new model, load the same data and then load the topic indicators. Unfortunately it is not possible to set the alpha parameter vector so it is not currently possible to initialize the model with the exact same alpha prior.
+To initialize a model with the sampled topic indicators, one needs to create a new model, load the same data and then load the topic indicators. Unfortunately, it is not possible to set the alpha parameter vector, so it is not currently possible to initialize the model with the same alpha prior.
 
 ```{r}
 new.topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
 new.topic.model$loadDocuments(sotu.instances)
 load.mallet.state(topic.model = new.topic.model, state.file = state_file)
 
-doc.topics.counts[1:3, 1:10]
-mallet.doc.topics(new.topic.model, smoothed=FALSE, normalized=FALSE)[1:3, 1:10]
+doc.topics.counts[1:3, 1:6]
+mallet.doc.topics(new.topic.model, smoothed=FALSE, normalized=FALSE)[1:3, 1:6]
 ```
 
-This just gives a first example of how to use the mallet R package for topic modeling.
+This vignette gives a first example of using the mallet R package for topic modelling.
+
+## Save and load topic models
+
+We can also save Mallet topic models and load them back into R.
+
+```{r}
+model_file <- file.path(tempdir(), "temp_mallet.model")
+mallet.topic.model.save(new.topic.model, model_file)
+read.topic.model <- mallet.topic.model.read(model_file)
+
+doc.topics.counts[1:3, 1:6]
+mallet.doc.topics(read.topic.model, smoothed=FALSE, normalized=FALSE)[1:3, 1:6]
+```
