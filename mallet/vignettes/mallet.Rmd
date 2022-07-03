@@ -33,9 +33,7 @@ To load the package, simply use ```library()```.
 library(mallet)
 ```
 
-
-
-We start out by using the example data set of the State of the Union adresses from 1790 to 2009.
+We start out by using the example data set of the State of the Union adresses from 1946 to 2008.
 
 ```{r}
 library(dplyr)
@@ -46,8 +44,8 @@ sotu[["text"]][1:2]
 Mallet comes with five different stop list files.
 
 ```{r}
-dir(system.file("stoplists/", package = "mallet"))
-stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
+mallet_supported_stoplists()
+stopwords_en_file_path <- mallet_stoplist_file_path("en")
 ```
 
 As a first step we need to create a LDA trainer object and supply the trainer with documents. We start out by creating a mallet instance list object. 
@@ -58,7 +56,7 @@ This function has a few extra options (whether to lowercase, how we define a tok
 sotu.instances <- 
   mallet.import(id.array = row.names(sotu), 
                 text.array = sotu[["text"]], 
-                stoplist = stopwords_en,
+                stoplist = stopwords_en_file_path,
                 token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
 ```
 
@@ -72,7 +70,7 @@ sotu.instances.short <-
 It is also possible to supply stop words as a character vector. 
 
 ```{r}
-stop_vector <- readLines(stopwords_en)
+stop_vector <- readLines(stopwords_en_file_path)
 sotu.instances.short <- 
   mallet.import(text.array = sotu[["text"]], 
                 stoplist = stop_vector)
@@ -96,9 +94,6 @@ Get the vocabulary, and some statistics about word frequencies. These may be use
 ```{r}
 vocabulary <- topic.model$getVocabulary()
 head(vocabulary)
-
-word.freqs <- mallet.word.freqs(topic.model)
-head(word.freqs)
 ```
 
 Optimize hyperparameters (\code{alpha} and \code{beta}) every 20 iterations, after 50 burn-in iterations.
@@ -132,10 +127,13 @@ What are the top words in topic 2? Notice that R indexes from 1 and Java from 0,
 mallet.top.words(topic.model, word.weights = topic.words[2,], num.top.words = 5)
 ```
 
-Show the first document with at least 5% tokens belonging to topic 2.
+Show the largest document with at least 50% tokens belonging to topic 2. Note, since the model is not identified, you might end up with another topic if you run the same code. 
 
 ```{r}
-sotu[["text"]][doc.topics[,2] > 0.05][1]
+docs <- which(doc.topics[,2] > 0.50)
+doc_size <- nchar(sotu[["text"]])[docs]
+idx <- docs[order(doc_size, decreasing = TRUE)[1]]
+sotu[["text"]][idx]
 ```
 
 
