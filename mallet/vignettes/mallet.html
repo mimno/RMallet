@@ -12,7 +12,7 @@
 
 <meta name="author" content="David Mimno and Måns Magnusson" />
 
-<meta name="date" content="2022-06-30" />
+<meta name="date" content="2022-07-03" />
 
 <title>Introduction to R mallet</title>
 
@@ -334,7 +334,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to R mallet</h1>
 <h4 class="author">David Mimno and Måns Magnusson</h4>
-<h4 class="date">2022-06-30</h4>
+<h4 class="date">2022-07-03</h4>
 
 
 
@@ -349,16 +349,16 @@ install, simply use <code>install.packages()</code></p>
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
-<p>Depending of the size of your data it can be so that you need
+<p>Depending on the size of your data, it can be so that you need to
 increase the Java virtual machine (JVM) heap memory to handle larger
-corpora. To do this you need specify how much memory you want to
+corpora. To do this, you need to specify how much memory you want to
 allocate to the JVM using the <code>Xmx</code> flag. Below is an example
-of allocating 4 gB to the JVM.</p>
+of allocating 4 Gb to the JVM.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">&quot;-Xmx4g&quot;</span>)</span></code></pre></div>
-<p>To load the package, simply use <code>library()</code>.</p>
+<p>To load the package, use <code>library()</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mallet)</span></code></pre></div>
-<p>We start out by using the example data set of the State of the Union
-adresses from 1790 to 2009.</p>
+<p>We start by using the example data set of the State of the Union
+addresses from 1946 to 2000.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
@@ -370,116 +370,128 @@ adresses from 1790 to 2009.</p>
 ##     intersect, setdiff, setequal, union</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(sotu)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
-<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;                                                                                                                                                                                                                                    
-## [2] &quot;In meeting you again I feel much satisfaction in being able to repeat my  congratulations on the favorable prospects which continue to distinguish  our public affairs. The abundant fruits of another year have blessed our  country with plenty and with the means of a flourishing commerce.  &quot;</code></pre>
+<pre><code>## [1] &quot;To the Congress of the United States:  &quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+## [2] &quot;A quarter century ago the Congress decided that it could no longer consider  the financial programs of the various departments on a piecemeal basis.  Instead it has called on the President to present a comprehensive Executive  Budget. The Congress has shown its satisfaction with that method by  extending the budget system and tightening its controls. The bigger and  more complex the Federal Program, the more necessary it is for the Chief  Executive to submit a single budget for action by the Congress.  &quot;</code></pre>
 <p>Mallet comes with five different stop list files.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span>(<span class="fu">system.file</span>(<span class="st">&quot;stoplists/&quot;</span>, <span class="at">package =</span> <span class="st">&quot;mallet&quot;</span>))</span></code></pre></div>
-<pre><code>## [1] &quot;de.txt&quot; &quot;en.txt&quot; &quot;fi.txt&quot; &quot;fr.txt&quot; &quot;jp.txt&quot; &quot;README&quot;</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>stopwords_en <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;stoplists/en.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;mallet&quot;</span>)</span></code></pre></div>
-<p>As a first step we need to create a LDA trainer object and supply the
-trainer with documents. We start out by creating a mallet instance list
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet_supported_stoplists</span>()</span></code></pre></div>
+<pre><code>## [1] &quot;de&quot; &quot;en&quot; &quot;fi&quot; &quot;fr&quot; &quot;jp&quot;</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>stopwords_en_file_path <span class="ot">&lt;-</span> <span class="fu">mallet_stoplist_file_path</span>(<span class="st">&quot;en&quot;</span>)</span></code></pre></div>
+<p>As a first step, we need to create an LDA trainer object and supply
+the trainer with documents. We start by creating a mallet instance list
 object.</p>
-<p>This function has a few extra options (whether to lowercase, how we
+<p>This function has a few extra options (whether to lowercase or how we
 define a token). See <code>?mallet.import</code> for details.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sotu.instances <span class="ot">&lt;-</span> </span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mallet.import</span>(<span class="at">id.array =</span> <span class="fu">row.names</span>(sotu), </span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">stoplist =</span> stopwords_en,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">stoplist =</span> stopwords_en_file_path,</span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">token.regexp =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">p{L}[</span><span class="sc">\\</span><span class="st">p{L}</span><span class="sc">\\</span><span class="st">p{P}]+</span><span class="sc">\\</span><span class="st">p{L}&quot;</span>)</span></code></pre></div>
-<p>If the data is already cleaned and we just want to use the index of
-<code>text.array</code> we can simply just supply the
+<p>If the data is already cleaned and we want to use the index of
+<code>text.array</code>, we can just supply the
 <code>text.array</code>.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sotu.instances.short <span class="ot">&lt;-</span> </span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mallet.import</span>(<span class="at">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]])</span></code></pre></div>
 <p>It is also possible to supply stop words as a character vector.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>stop_vector <span class="ot">&lt;-</span> <span class="fu">readLines</span>(stopwords_en)</span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>stop_vector <span class="ot">&lt;-</span> <span class="fu">readLines</span>(stopwords_en_file_path)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>sotu.instances.short <span class="ot">&lt;-</span> </span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mallet.import</span>(<span class="at">text.array =</span> sotu[[<span class="st">&quot;text&quot;</span>]], </span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">stoplist =</span> stop_vector)</span></code></pre></div>
-<p>To fit a model we first need to create a topic trainer object.</p>
+<p>We first need to create a topic trainer object to fit a model.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>topic.model <span class="ot">&lt;-</span> <span class="fu">MalletLDA</span>(<span class="at">num.topics=</span><span class="dv">10</span>, <span class="at">alpha.sum =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="fl">0.1</span>)</span></code></pre></div>
 <p>Load our documents. We could also pass in the filename of a saved
-instance list file that we build from the command-line tools.</p>
+instance list file we build from the command-line tools.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">loadDocuments</span>(sotu.instances)</span></code></pre></div>
-<p>Get the vocabulary, and some statistics about word frequencies. These
-may be useful in further curating the stopword list.</p>
+<p>To get the model’s vocabulary, we use the method
+<code>getVocabulary()</code>. The vocabulary may be helpful in further
+curating the stopword list.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>vocabulary <span class="ot">&lt;-</span> topic.model<span class="sc">$</span><span class="fu">getVocabulary</span>()</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vocabulary)</span></code></pre></div>
-<pre><code>## [1] &quot;fellow-citizens&quot; &quot;senate&quot;          &quot;house&quot;           &quot;representatives&quot;
-## [5] &quot;meeting&quot;         &quot;feel&quot;</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>word.freqs <span class="ot">&lt;-</span> <span class="fu">mallet.word.freqs</span>(topic.model)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(word.freqs)</span></code></pre></div>
-<pre><code>##             words term.freq doc.freq
-## 1 fellow-citizens        16       16
-## 2          senate       572      514
-## 3           house       485      435
-## 4 representatives       471      429
-## 5         meeting       198      186
-## 6            feel       192      188</code></pre>
+<pre><code>## [1] &quot;congress&quot; &quot;united&quot;   &quot;states&quot;   &quot;quarter&quot;  &quot;century&quot;  &quot;ago&quot;</code></pre>
 <p>Optimize hyperparameters ( and ) every 20 iterations, after 50
 burn-in iterations.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</span></code></pre></div>
-<p>Now train a model. Note that hyperparameter optimization is on, by
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">setAlphaOptimization</span>(<span class="dv">20</span>, <span class="dv">50</span>)</span></code></pre></div>
+<p>Now train a model. Note that hyperparameter optimization is on by
 default. We can specify the number of iterations. Here we’ll use a
 large-ish round number.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">train</span>(<span class="dv">200</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">train</span>(<span class="dv">200</span>)</span></code></pre></div>
 <p>We can also run through a few iterations where we pick the best topic
-for each token, rather than sampling from the posterior
-distribution.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">maximize</span>(<span class="dv">10</span>)</span></code></pre></div>
+for each token rather than sampling from the posterior distribution.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>topic.model<span class="sc">$</span><span class="fu">maximize</span>(<span class="dv">10</span>)</span></code></pre></div>
 <p>Get the probability of topics in documents and the probability of
 words in topics. By default, these functions return raw word counts.
-Here we want probabilities, so we normalize, and add “smoothing” so that
+Here we want probabilities, so we normalize and add “smoothing” so that
 nothing has exactly 0 probability.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>doc.topics <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>topic.words <span class="ot">&lt;-</span> <span class="fu">mallet.topic.words</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>doc.topics <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>topic.words <span class="ot">&lt;-</span> <span class="fu">mallet.topic.words</span>(topic.model, <span class="at">smoothed=</span><span class="cn">TRUE</span>, <span class="at">normalized=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>What are the top words in topic 2? Notice that R indexes from 1 and
 Java from 0, so this will be the topic that mallet called topic 1.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.top.words</span>(topic.model, <span class="at">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="at">num.top.words =</span> <span class="dv">5</span>)</span></code></pre></div>
-<pre><code>##        words    weights
-## 1   congress 0.03297508
-## 2       made 0.01389407
-## 3    service 0.01136034
-## 4 department 0.01128829
-## 5     public 0.01084399</code></pre>
-<p>Show the first document with at least 5% tokens belonging to topic
-2.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][doc.topics[,<span class="dv">2</span>] <span class="sc">&gt;</span> <span class="fl">0.05</span>][<span class="dv">1</span>]</span></code></pre></div>
-<pre><code>## [1] &quot;Fellow-Citizens of the Senate and House of Representatives:  &quot;</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.top.words</span>(topic.model, <span class="at">word.weights =</span> topic.words[<span class="dv">2</span>,], <span class="at">num.top.words =</span> <span class="dv">5</span>)</span></code></pre></div>
+<pre><code>##     words    weights
+## 1   world 0.02124839
+## 2 nations 0.02027497
+## 3  united 0.01671988
+## 4   peace 0.01286853
+## 5  states 0.01282621</code></pre>
+<p>Show the largest document with at least 50% tokens belonging to topic
+2. Note, since the model is not identified, you might end up with
+another topic if you run the same code.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>docs <span class="ot">&lt;-</span> <span class="fu">which</span>(doc.topics[,<span class="dv">2</span>] <span class="sc">&gt;</span> <span class="fl">0.50</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>doc_size <span class="ot">&lt;-</span> <span class="fu">nchar</span>(sotu[[<span class="st">&quot;text&quot;</span>]])[docs]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> docs[<span class="fu">order</span>(doc_size, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span>]]</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>sotu[[<span class="st">&quot;text&quot;</span>]][idx]</span></code></pre></div>
+<pre><code>## [1] &quot;More specifically, these programs, which are part of our overall foreign  aid request, promote U.S. security in two principal ways. First, they  assist friendly and allied nations to develop the capability to defend  themselves and maintain their own independence. An example during this past  year was the timely support provided Thailand to help bolster that  country&#39;s defenses against the large numbers of Soviet-backed Vietnamese  troops ranged along its eastern frontier. In addition, over the years these  programs have been important to the continued independence of other friends  and allies such as Israel, Greece, Turkey and Korea. Second, security  assistance constitutes an essential element in the broad cooperative  relationships we have established with many nations which permit either  U.S. bases on their territory or access by U.S. forces to their facilities.  These programs have been particularly important with regard to the  recently-concluded access agreements with various countries in the Persian  Gulf and Indian Ocean regions and have been crucial to the protection of  our interests throughout Southwest Asia.  &quot;</code></pre>
 </div>
 <div id="save-and-load-topic-states" class="section level2">
 <h2>Save and load topic states</h2>
 <p>We can also store our current topic model state to use it for
 postprocessing. We can store the state file either as a txt file or a
 compressed gzip file.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>state_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;temp_mallet_state.gz&quot;</span>)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save.mallet.state</span>(<span class="at">topic.model =</span> topic.model, <span class="at">state.file =</span> state_file)</span></code></pre></div>
-<p>We also store the topic counts per document and then remove the old
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>state_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;temp_mallet_state.gz&quot;</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">save.mallet.state</span>(<span class="at">topic.model =</span> topic.model, <span class="at">state.file =</span> state_file)</span></code></pre></div>
+<p>We also store the topic counts per document and remove the old
 model.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>doc.topics.counts <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(topic.model)</span></code></pre></div>
-<p>To initialize a model with the sampled topic indicators one need to
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>doc.topics.counts <span class="ot">&lt;-</span> <span class="fu">mallet.doc.topics</span>(topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(topic.model)</span></code></pre></div>
+<p>To initialize a model with the sampled topic indicators, one needs to
 create a new model, load the same data and then load the topic
-indicators. Unfortunately it is not possible to set the alpha parameter
-vector so it is not currently possible to initialize the model with the
-exact same alpha prior.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>new.topic.model <span class="ot">&lt;-</span> <span class="fu">MalletLDA</span>(<span class="at">num.topics=</span><span class="dv">10</span>, <span class="at">alpha.sum =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="fl">0.1</span>)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>new.topic.model<span class="sc">$</span><span class="fu">loadDocuments</span>(sotu.instances)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load.mallet.state</span>(<span class="at">topic.model =</span> new.topic.model, <span class="at">state.file =</span> state_file)</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>doc.topics.counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
-<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-## [1,]    0    4    0    0    0    0    0    0    0     0
-## [2,]   19    0    0    0    0    0    0    1    0     0
-## [3,]   34    0    0    0    0    0    0    6    1     0</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.doc.topics</span>(new.topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div>
-<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-## [1,]    0    4    0    0    0    0    0    0    0     0
-## [2,]   19    0    0    0    0    0    0    1    0     0
-## [3,]   34    0    0    0    0    0    0    6    1     0</code></pre>
-<p>This just gives a first example of how to use the mallet R package
-for topic modeling.</p>
+indicators. Unfortunately, it is not possible to set the alpha parameter
+vector, so it is not currently possible to initialize the model with the
+same alpha prior.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>new.topic.model <span class="ot">&lt;-</span> <span class="fu">MalletLDA</span>(<span class="at">num.topics=</span><span class="dv">10</span>, <span class="at">alpha.sum =</span> <span class="dv">1</span>, <span class="at">beta =</span> <span class="fl">0.1</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>new.topic.model<span class="sc">$</span><span class="fu">loadDocuments</span>(sotu.instances)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load.mallet.state</span>(<span class="at">topic.model =</span> new.topic.model, <span class="at">state.file =</span> state_file)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>doc.topics.counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    0    2    1    0    0    0
+## [2,]    8    0   23    6    0    0
+## [3,]    0    0   38    7    0    0</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.doc.topics</span>(new.topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    0    2    1    0    0    0
+## [2,]    8    0   23    6    0    0
+## [3,]    0    0   38    7    0    0</code></pre>
+<p>This vignette gives a first example of using the mallet R package for
+topic modelling.</p>
+</div>
+<div id="save-and-load-topic-models" class="section level2">
+<h2>Save and load topic models</h2>
+<p>We can also save Mallet topic models and load them back into R.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>model_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;temp_mallet.model&quot;</span>)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.topic.model.save</span>(new.topic.model, model_file)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>read.topic.model <span class="ot">&lt;-</span> <span class="fu">mallet.topic.model.read</span>(model_file)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>doc.topics.counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    0    2    1    0    0    0
+## [2,]    8    0   23    6    0    0
+## [3,]    0    0   38    7    0    0</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mallet.doc.topics</span>(read.topic.model, <span class="at">smoothed=</span><span class="cn">FALSE</span>, <span class="at">normalized=</span><span class="cn">FALSE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    0    2    1    0    0    0
+## [2,]    8    0   23    6    0    0
+## [3,]    0    0   38    7    0    0</code></pre>
 </div>
 
 

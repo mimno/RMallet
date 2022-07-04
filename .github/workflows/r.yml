@@ -23,7 +23,7 @@ jobs:
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
     strategy:
       fail-fast: true
-      max-parallel: 5
+      max-parallel: 1
       matrix:
         config:
           - {os: ubuntu-latest, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
@@ -67,5 +67,5 @@ jobs:
           remotes::install_deps(pkgdir = "mallet", dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
-        run: rcmdcheck::rcmdcheck(path = "mallet", args = "--no-manual", error_on = "error")
+        run: rcmdcheck::rcmdcheck(path = "mallet", args = c("--as-cran", "--no-manual"), error_on = "warning")
         shell: Rscript {0}

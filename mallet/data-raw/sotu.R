@@ -9,6 +9,9 @@ sotu <- sotu[, c(2,1,3)]
 names(sotu) <- c("year", "paragraph", "text")
 sotu$paragraph <- as.integer(sotu$paragraph)
 
-sotu <- sotu[sotu$year >= 1946 & sotu$year <= 2008,]
+sotu <- sotu[sotu$year >= 1946 & sotu$year <= 2000,]
+#sotu$text <- stringi::stri_enc_toascii(sotu$text)
+#idx <- which(!stringi::stri_enc_isascii(sotu$text))
+#sotu$text[idx]
 usethis::use_data(sotu, overwrite = TRUE)
 

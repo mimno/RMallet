@@ -61,9 +61,9 @@ NULL
 
 #' State of the Union Adresses.
 #'
-#' A dataset containing State of the Union Adresses by paragraph from 1946 to 2008.
+#' A dataset containing State of the Union Adresses by paragraph from 1946 to 2000.
 #'
-#' @format A \code{\link[tibble]{tibble}} \code{data.frame} with 7347 rows and 3 variables:
+#' @format A \code{\link[tibble]{tibble}} \code{data.frame} with 6816 rows and 3 variables:
 #' \describe{
 #'   \item{year}{Year of the adress.}
 #'   \item{paragraph}{The paragraph of the address.}
@@ -434,22 +434,51 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3, ...) {
 }
 
 #' @title
-#' Load a topic from a file
+#' Load (read) and save (write) a topic from a file
+#'
+#' @description
+#' This function returns the topic model loaded from a file or stores a topic model to file.
+#'
+#' @param filename The mallet topic model file
+#' @param topic.model A topic model to save/write to file
+#'
+#' @export
+mallet.topic.model.read <- function(filename) {
+  rJava::J("cc/mallet/topics/RTopicModel")$read(rJava::.jnew("java/io/File", filename))
+}
+
+#' @rdname mallet.topic.model.read
+#' @export
+mallet.topic.model.load <- mallet.topic.model.read
+
+#' @rdname mallet.topic.model.read
+#' @export
+mallet.topic.model.write <- function(topic.model, filename) {
+  topic.model$write(rJava::.jnew("java/io/File", filename))
+}
+
+#' @rdname mallet.topic.model.read
+#' @export
+mallet.topic.model.save <- mallet.topic.model.write
+
+
+
+#' @title
+#' Load and save mallet instances from/to file
 #'
 #' @description
 #' This function returns the topic model loaded from a file.
 #'
-#' @param filename The mallet topic file
+#' @param filename The mallet topic model file
+#' @param instances An instances object to save/write to file
 #'
 #' @export
-mallet.topic.load <- function(filename) {
-  rJava::J("cc/mallet/topics/RTopicModel")$read(rJava::.jnew("java/io/File", filename))
-}
-
 save.mallet.instances <- function(instances, filename) {
   instances$save(rJava::.jnew("java/io/File", filename))
 }
 
+#' @rdname save.mallet.instances
+#' @export
 load.mallet.instances <- function(filename) {
   rJava::J("cc.mallet.types.InstanceList")$load(rJava::.jnew("java/io/File", filename))
 }

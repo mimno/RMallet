@@ -1,7 +1,6 @@
 context("mallet-functionality")
 
 data(sotu)
-stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
 
 test_that(desc="getVocabulary",{
   skip_on_cran()
@@ -9,7 +8,7 @@ test_that(desc="getVocabulary",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -28,7 +27,7 @@ test_that(desc="mallet.word.freqs",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -49,7 +48,7 @@ test_that(desc="setAlphaOptimization",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -66,7 +65,7 @@ test_that(desc="train optimized",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -84,7 +83,7 @@ test_that(desc="maximize",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -102,7 +101,7 @@ test_that(desc="Get parameter matrices",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -112,14 +111,14 @@ test_that(desc="Get parameter matrices",{
     doc.topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
   )
 
-  expect_equal(dim(doc.topics), c(7347,10))
-  expect_equal(object = rowSums(doc.topics), expected = rep(1,7347), tolerance = .00000000001, scale = 1)
+  expect_equal(dim(doc.topics), c(6816,10))
+  expect_equal(object = rowSums(doc.topics), expected = rep(1,6816), tolerance = .00000000001, scale = 1)
 
   expect_silent(
     topic.words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
   )
 
-  expect_equal(dim(topic.words), c(10, 14474))
+  expect_equal(dim(topic.words), c(10, 13634))
   expect_equal(object = rowSums(topic.words), expected = rep(1,10), tolerance = .00000000001, scale = 1)
 
 })
@@ -130,7 +129,7 @@ test_that(desc="mallet.top.words",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -150,7 +149,7 @@ test_that(desc="mallet.subset",{
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
                   text.array = sotu[["text"]],
-                  stoplist = stopwords_en,
+                  stoplist = mallet_stoplist_file_path("en"),
                   token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
   topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
   topic.model$loadDocuments(sotu.instances)
@@ -168,8 +167,14 @@ test_that(desc="mallet.subset",{
                                                    normalized=TRUE)
   })
 
-  expect_equal(dim(modern.topic.words), c(10, 14474))
-  expect_equal(dim(not.modern.topic.words), c(10, 14474))
+  expect_equal(dim(modern.topic.words), c(10, 13634))
+  expect_equal(dim(not.modern.topic.words), c(10, 13634))
   expect_true(any(modern.topic.words != not.modern.topic.words))
+})
+
+test_that(desc="mallet_jar",{
+  skip_on_cran()
+
+  expect_equal(mallet_jar(), "rmallet-202108.jar")
 })
 
