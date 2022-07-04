@@ -123,7 +123,7 @@ test_that(desc="Get parameter matrices",{
 
 })
 
-test_that(desc="mallet.top.words",{
+test_that(desc="mallet.top.words and mallet.topic.labels",{
   skip_on_cran()
 
   sotu.instances <-
@@ -140,6 +140,8 @@ test_that(desc="mallet.top.words",{
   )
   expect_equal(dim(top.words), c(5,2))
   expect_lt(object = sum(top.words$weights), expected = 1)
+
+  checkmate::expect_character(mallet.topic.labels(topic.model), min.chars = 6, any.missing = FALSE, len = 10)
 })
 
 
@@ -171,6 +173,9 @@ test_that(desc="mallet.subset",{
   expect_equal(dim(not.modern.topic.words), c(10, 13634))
   expect_true(any(modern.topic.words != not.modern.topic.words))
 })
+
+
+
 
 test_that(desc="mallet_jar",{
   skip_on_cran()

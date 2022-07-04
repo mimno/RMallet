@@ -379,15 +379,23 @@ mallet.read.dir <- function(Dir) {
 #' The model returned by \code{MalletLDA}
 #' @param topic.words
 #' The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
+#' Default (NULL) is to use the \code{topic.model} to extract the \code{topic.words}.
 #' @param num.top.words
-#' The number of words to include for each topic
+#' The number of words to include for each topic. Defaults to 3.
+#' @param ...
+#' Further arguments supplied to \code{\link{mallet.topic.words}}.
+#'
 #'
 #' @seealso
 #' \code{\link{mallet.topic.words}} produces topic-word weights.
 #' \code{\link{mallet.top.words}} produces a data frame for a single topic.
 #'
 #' @export
-mallet.topic.labels <- function(topic.model, topic.words, num.top.words=3) {
+mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3, ...) {
+  if(is.null(topic.words)){
+    topic.words <- mallet.topic.words(topic.model, ...)
+  }
+  topic.model
   n.topics <- dim(topic.words)[1]
   topics.labels <- rep("", n.topics)
   for (topic in 1:n.topics) topics.labels[topic] <- paste(mallet.top.words(topic.model, topic.words[topic,], num.top.words)$words, collapse=" ")

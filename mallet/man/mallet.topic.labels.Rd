@@ -4,14 +4,17 @@
 \alias{mallet.topic.labels}
 \title{Get strings containing the most probable words for each topic}
 \usage{
-mallet.topic.labels(topic.model, topic.words, num.top.words = 3)
+mallet.topic.labels(topic.model, topic.words = NULL, num.top.words = 3, ...)
 }
 \arguments{
 \item{topic.model}{The model returned by \code{MalletLDA}}
 
-\item{topic.words}{The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}}
+\item{topic.words}{The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
+Default (NULL) is to use the \code{topic.model} to extract the \code{topic.words}.}
 
-\item{num.top.words}{The number of words to include for each topic}
+\item{num.top.words}{The number of words to include for each topic. Defaults to 3.}
+
+\item{...}{Further arguments supplied to \code{\link{mallet.topic.words}}.}
 }
 \description{
 This function returns a vector of strings, one for each topic, with the
