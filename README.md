@@ -1,7 +1,7 @@
 mallet
 ======
 [![R](https://github.com/mimno/RMallet/actions/workflows/r.yml/badge.svg?branch=master)](https://github.com/mimno/RMallet/actions/workflows/r.yml)
-[![development-branch](https://github.com/mimno/RMallet/actions/workflows/r.yml/badge.svg?branch=development)](https://github.com/mimno/RMallet/actions/workflows/r.yml)
+[![codecov](https://codecov.io/gh/mimno/RMallet/branch/master/graph/badge.svg)](https://codecov.io/gh/mimno/RMallet)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mallet)](https://cran.r-project.org/package=pxweb)
 [![Downloads](http://cranlogs.r-pkg.org/badges/mallet)](https://cran.r-project.org/package=pxweb)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/mallet)](https://cran.r-project.org/package=mallet)
