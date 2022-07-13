@@ -8,7 +8,7 @@ mallet
 
 mallet is an R package to interface with the Java machine learning tool MALLET. More information about Mallet can be found [here](http://mallet.cs.umass.edu/).
 
-For installation and usage, see the [introduction vignette](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mimno/RMallet/master/mallet/inst/doc/mallet.html).  
+For installation and usage, see the [introduction vignette](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mimno/RMallet/master/mallet/vignettes/mallet.html). 
 
 You are welcome to help out by:
 
