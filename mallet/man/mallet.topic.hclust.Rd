@@ -4,15 +4,24 @@
 \alias{mallet.topic.hclust}
 \title{Return a hierarchical clustering of topics}
 \usage{
-mallet.topic.hclust(doc.topics, topic.words, balance = 0.3, ...)
+mallet.topic.hclust(
+  doc.topics,
+  topic.words,
+  balance = 0.3,
+  method = "euclidean",
+  ...
+)
 }
 \arguments{
-\item{doc.topics}{A documents by topics matrix of topic probabilities.}
+\item{doc.topics}{A documents by topics matrix of topic probabilities (see \code{\link{mallet.doc.topics}}).}
 
-\item{topic.words}{A topics by words matrix of word probabilities.}
+\item{topic.words}{A topics by words matrix of word probabilities (see \code{\link{mallet.topic.words}}) .}
 
 \item{balance}{A value between 0.0 (use only document-level similarity)
 and 1.0 (use only word-level similarity).}
+
+\item{method}{method to use in \code{\link[stats]{dist}} to compute distance between topics.
+Defaults to \code{euclidian}.}
 
 \item{...}{Further arguments for \code{\link[stats]{hclust}}.}
 }
@@ -23,8 +32,8 @@ the same words, or the may appear in some of the same documents. The \code{balan
 }
 \examples{
 \dontrun{
-topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
-plot(mallet.topic.hclust(doc.topics, topic.words, 0.3), labels=topic.labels)
+  topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
+  plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic.labels)
 }
 
 }

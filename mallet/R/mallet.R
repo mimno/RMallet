@@ -350,6 +350,7 @@ mallet.import <- function(id.array = NULL, text.array, stoplist = "", preserve.c
 #'
 #' @export
 mallet.read.dir <- function(Dir) {
+  .Deprecated()
   # get Dir Files (filepaths)
   Files <- file.path(Dir, list.files(Dir))
   # for each File:
@@ -413,12 +414,14 @@ mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3
 #' the same words, or the may appear in some of the same documents. The \code{balance} parameter allows you to interpolate between the similarities determined by these two methods.
 #'
 #' @param doc.topics
-#' A documents by topics matrix of topic probabilities.
+#' A documents by topics matrix of topic probabilities (see \code{\link{mallet.doc.topics}}).
 #' @param topic.words
-#' A topics by words matrix of word probabilities.
+#' A topics by words matrix of word probabilities (see \code{\link{mallet.topic.words}}) .
 #' @param balance
 #' A value between 0.0 (use only document-level similarity)
 #' and 1.0 (use only word-level similarity).
+#' @param method method to use in \code{\link[stats]{dist}} to compute distance between topics.
+#' Defaults to \code{euclidian}.
 #' @param ...
 #' Further arguments for \code{\link[stats]{hclust}}.
 #'
@@ -428,17 +431,22 @@ mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3
 #'
 #' @examples
 #' \dontrun{
-#' topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
-#' plot(mallet.topic.hclust(doc.topics, topic.words, 0.3), labels=topic.labels)
+#'   topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
+#'   plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic.labels)
 #' }
 #'
 #' @export
-mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3, ...) {
+mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3, method = "euclidean", ...) {
+  checkmate::assert_matrix(doc.topics, ncols = nrow(topic.words))
+  checkmate::assert_matrix(topic.words, nrow = ncol(doc.topics))
+  checkmate::assert_number(balance, lower = 0, upper = 1)
+  checkmate::assert_string(method)
+
   ## transpose and normalize the doc topics
   topic.docs <- t(doc.topics)
   topic.docs <- topic.docs / rowSums(topic.docs)
 
-  stats::hclust(balance * stats::dist(topic.words) + (1.0 - balance) * stats::dist(topic.docs), ...)
+  stats::hclust(balance * stats::dist(topic.words, method = method) + (1.0 - balance) * stats::dist(topic.docs, method = method), ...)
 }
 
 #' @title
