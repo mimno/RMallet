@@ -22,7 +22,7 @@ test_that(desc="getVocabulary",{
 
 
 test_that(desc="mallet.word.freqs",{
-  skip("Potential bug")
+  skip_on_cran()
 
   sotu.instances <-
     mallet.import(id.array = row.names(sotu),
@@ -36,9 +36,10 @@ test_that(desc="mallet.word.freqs",{
   expect_silent(
     word.freqs <- mallet.word.freqs(topic.model)
   )
-  expect_equal(as.character(word.freqs[1:3,1]), c("fellow-citizens", "senate", "house"))
-  expect_equal(word.freqs[1:3,2], c(16, 572, 485))
-  expect_equal(word.freqs[1:3,3], c(16, 514, 435))
+  expect_equal(as.character(word.freqs[1:3,1]), c("congress", "united", "states"))
+  expect_equal(word.freqs[1:3,2], c(1025, 508, 557))
+  expect_equal(word.freqs[1:3,3], c(879, 426, 480))
+  expect_true(all(word.freqs[,3] <= word.freqs[,2]))
 })
 
 
@@ -180,6 +181,7 @@ test_that(desc="mallet.subset",{
 test_that(desc="mallet_jar",{
   skip_on_cran()
 
-  expect_equal(mallet_jar(), "rmallet-202108.jar")
+  expect_failure(expect_equal(mallet_jar(), "rmallet-202108.jar"))
+  expect_equal(mallet_jar(), "rmallet-20220712.jar")
 })
 

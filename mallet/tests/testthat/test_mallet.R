@@ -74,7 +74,7 @@ test_that(desc="Train model 2 (with stopwords)",{
 
 
 test_that(desc="Issue #2 bug",{
-  skip("Bug to be fixed.")
+  skip_on_cran()
 
   documents <- data.frame(id=as.character(1:5), text=c("this is an example document",
                                                        "here is another example document",
