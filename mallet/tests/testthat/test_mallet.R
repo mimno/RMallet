@@ -106,3 +106,32 @@ test_that(desc="Issue #2 bug",{
 
   }
 )
+
+
+
+test_that(desc="Test that hclust works as expected",{
+  skip_on_cran()
+
+  expect_silent(
+    sotu.instances <-
+      mallet.import(text.array = sotu[["text"]])
+  )
+
+  expect_silent(
+    topic.model <- MalletLDA(num.topics=5, alpha.sum = 1, beta = 0.1)
+  )
+
+  expect_silent(
+    topic.model$loadDocuments(sotu.instances)
+  )
+
+  expect_silent(
+    topic.model$train(20)
+  )
+
+  expect_silent(dt <- mallet.doc.topics(topic.model))
+  expect_silent(tw <- mallet.topic.words(topic.model))
+  expect_silent(
+    res <- mallet.topic.hclust(dt, tw)
+  )
+})
