@@ -1,12 +1,11 @@
 Package: mallet
 Type: Package
-Title: A wrapper around the Java machine learning tool MALLET
+Title: A Wrapper Around the Java Machine Learning Tool MALLET
 Version: 1.3.0
 Date: 2022-07-01
 Author: David Mimno, Måns Magnusson
 Maintainer: David Mimno <mimno@cornell.edu>
-Description: This package allows you to train topic models in mallet and load
-    results directly into R.
+Description: Train topic models using mallet and load results directly into R.
 License: MIT + file LICENSE
 SystemRequirements: java
 Encoding: UTF-8
