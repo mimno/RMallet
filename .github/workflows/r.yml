@@ -67,5 +67,5 @@ jobs:
           remotes::install_deps(pkgdir = "mallet", dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
-        run: rcmdcheck::rcmdcheck(path = "mallet", args = c("--as-cran", "--no-manual"), error_on = "note")
+        run: rcmdcheck::rcmdcheck(path = "mallet", args = c("--as-cran", "--no-manual"), error_on = "warning")
         shell: Rscript {0}
