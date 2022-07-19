@@ -7,11 +7,14 @@
 load.mallet.state(topic.model, state.file)
 }
 \arguments{
-\item{topic.model}{A Mallet \code{topic.model} object}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 
 \item{state.file}{File path to store the mallet state file to.}
 }
+\value{
+a java \code{cc.mallet.topics.RTopicModel} object
+}
 \description{
-This reads writes a current sampling state of mallet to file. The state contain 
+This reads writes a current sampling state of mallet to file. The state contain
 hyperparameters \eqn{\alpha} and \eqn{\beta} together with topic indicators.
 }

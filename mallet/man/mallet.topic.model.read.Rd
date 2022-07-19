@@ -18,7 +18,7 @@ mallet.topic.model.save(topic.model, filename)
 \arguments{
 \item{filename}{The mallet topic model file}
 
-\item{topic.model}{A topic model to save/write to file}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 }
 \description{
 This function returns the topic model loaded from a file or stores a topic model to file.

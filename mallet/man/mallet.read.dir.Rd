@@ -9,6 +9,9 @@ mallet.read.dir(Dir)
 \arguments{
 \item{Dir}{The path to a directory containing one document per file.}
 }
+\value{
+a \code{data.frame} with file \code{id} and \code{text} content.
+}
 \description{
 This function takes a directory path as its only argument and returns a
  \code{data.frame} with two columns: <id> & <text>,
@@ -20,10 +23,8 @@ This function was contributed to RMallet by Dan Bowen.
 }
 \examples{
 \dontrun{
-documents <- mallet.read.dir(Dir)
-mallet.instances <-
-  mallet.import(documents$id, documents$text, "en.txt",
-                token.regexp = "\\\\\\\\p{L}[\\\\\\\\p{L}\\\\\\\\p{P}]+\\\\\\\\p{L}")
+directory <- system.file("stoplists", package = "mallet")
+stoplists <- mallet.read.dir(directory)
 }
 
 }

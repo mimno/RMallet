@@ -25,6 +25,9 @@ Defaults to \code{euclidian}.}
 
 \item{...}{Further arguments for \code{\link[stats]{hclust}}.}
 }
+\value{
+An object of class \code{\link{hclust}} which describes the tree produced by the clustering process.
+}
 \description{
 Returns a hierarchical clustering of topics that can be plotted as a dendrogram.
 There are two ways of measuring topic similarity: topics may contain the some of
@@ -32,12 +35,28 @@ the same words, or the may appear in some of the same documents. The \code{balan
 }
 \examples{
 \dontrun{
-  topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
-  plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic.labels)
+# Read in sotu example data
+data(sotu)
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
+# Create topic model
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+topic.model$loadDocuments(sotu.instances)
+
+# Train topic model
+topic.model$train(200)
+
+# Create hiearchical clusters of topics
+topic_labels <- mallet.topic.labels(topic.model)
+plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
 }
 
 }
 \seealso{
 This function uses data matrices from \code{\link{mallet.doc.topics}}
-and \code{\link{mallet.topic.words}}
+and \code{\link{mallet.topic.words}} using the \code{\link{hclust}} function.
 }

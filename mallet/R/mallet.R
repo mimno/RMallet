@@ -7,40 +7,6 @@
 #' functions, this wrapper focuses on the topic modeling sub-package written by
 #' David Mimno. The package uses the \code{rJava} package to connect to a JVM.
 #'
-#' @details
-#' \tabular{ll}{
-#' Package: \tab mallet\cr
-#' Type: \tab Package\cr
-#' Version: \tab 1.0\cr
-#' Date: \tab 2013-08-08\cr
-#' License: \tab MIT\cr
-#' }
-#'
-#' Create a topic model trainer:
-#' \code{\link{MalletLDA}}
-#'
-#' Load documents from disk and import them:
-#' \code{\link{mallet.read.dir}}
-#' \code{\link{mallet.import}}
-#'
-#' Get info about word frequencies:
-#' \code{\link{mallet.word.freqs}}
-#'
-#' Get trained model parameters:
-#' \code{\link{mallet.doc.topics}}
-#' \code{\link{mallet.topic.words}}
-#' \code{\link{mallet.subset.topic.words}}
-#'
-#' Reports on topic words:
-#' \code{\link{mallet.top.words}}
-#' \code{\link{mallet.topic.labels}}
-#'
-#' Clustering of topics:
-#' \code{\link{mallet.topic.hclust}}
-#'
-#' @author
-#' Maintainer: David Mimno
-#'
 #' @references
 #' The model, Latent Dirichlet allocation (LDA):
 #' \cite{David M Blei, Andrew Ng, Michael Jordan. Latent Dirichlet Allocation. J. of Machine Learning Research, 2003.}
@@ -101,6 +67,30 @@ NULL
 #' determined by the number of words in the vocabulary. Again, this value may change
 #' due to hyperparameter optimization.
 #'
+#' @returns a \code{cc.mallet.topics.RTopicModel} object
+#'
+#' @examples
+#' \dontrun{
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Extract results
+#' doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+#' topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
+#' top_words <- mallet.top.words(topic.model, word.weights = topic_words[2,], num.top.words = 5)
+#' }
 #'
 #' @export
 MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) {
@@ -112,6 +102,7 @@ MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) {
 }
 
 
+
 #' @title
 #' Retrieve a matrix of words weights for topics
 #'
@@ -120,7 +111,7 @@ MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) {
 #' and one column for every word in the vocabulary.
 #'
 #' @param topic.model
-#' The model returned by \code{MalletLDA}
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
 #' @param normalized
 #' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE},
 #' values will be integers (possibly plus the smoothing constant) representing the
@@ -128,6 +119,31 @@ MalletLDA <- function(num.topics = 10, alpha.sum = 5.0, beta = 0.01) {
 #' @param smoothed
 #' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as
 #' \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#'
+#' @returns a number of topics by vocabulary size matrix.
+#'
+#' @examples
+#' \dontrun{
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Extract results
+#' doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+#' topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
+#' top_words <- mallet.top.words(topic.model, word.weights = topic_words[2,], num.top.words = 5)
+#' }
 #'
 #' @export
 mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
@@ -143,7 +159,7 @@ mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
 #' column for every topic.
 #'
 #' @param topic.model
-#' The model returned by \code{MalletLDA}
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
 #' @param normalized
 #' If \code{TRUE}, normalize the rows so that each document sums to one. If \code{FALSE},
 #' values will be integers (possibly plus the smoothing constant) representing the
@@ -151,6 +167,32 @@ mallet.topic.words <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
 #' @param smoothed
 #' If \code{TRUE}, add the smoothing parameter for the model (initial value specified as
 #' \code{alpha.sum} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.
+#'
+#' @returns a number of documents by number of topics matrix.
+#'
+#' @examples
+#' \dontrun{
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Extract results
+#' doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+#' topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
+#' top_words <- mallet.top.words(topic.model, word.weights = topic_words[2,], num.top.words = 5)
+#' }
+#'
 #'
 #' @export
 mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
@@ -169,15 +211,36 @@ mallet.doc.topics <- function(topic.model, normalized=FALSE, smoothed=FALSE) {
 #' stopwords.
 #'
 #' @param topic.model
-#' A Mallet topic trainer returned by \code{MalletLDA}
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
 #'
 #' @seealso
 #' \code{\link{MalletLDA}}
 #'
+#' @returns a \code{data.frame} with the word type (\code{word}), the word frequency (\code{word.freq}), and the document frequency (\code{doc.freq})
+#'
+#' @examples
+#' \dontrun{
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Get word frequencies
+#' word_freqs <- mallet.word.freqs(topic.model)
+#'
+#' }
+#'
 #' @export
 mallet.word.freqs <- function(topic.model) {
   word.freqs <- rJava::.jevalArray(topic.model$getWordFrequencies(), simplify=T)
-  data.frame(words = topic.model$getVocabulary(), term.freq = word.freqs[,1], doc.freq = word.freqs[,2])
+  data.frame(word = topic.model$getVocabulary(), word.freq = word.freqs[,1], doc.freq = word.freqs[,2])
 }
 
 
@@ -193,10 +256,10 @@ mallet.word.freqs <- function(topic.model) {
 #' of documents.
 #'
 #' @param topic.model
-#' The model returned by \code{MalletLDA}
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
 #' @param subset.docs
-#' An array of \code{TRUE}/\code{FALSE} values specifying which documents should
-#' be used and which should be ignored.
+#' A logical vector of \code{TRUE}/\code{FALSE} values specifying which documents should
+#' be used/included and which should be ignored.
 #' @param normalized
 #' If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE},
 #' values will be integers (possibly plus the smoothing constant) representing
@@ -208,10 +271,28 @@ mallet.word.freqs <- function(topic.model) {
 #' @seealso
 #' \code{\link{mallet.topic.words}}
 #'
+#' @returns a number of topics by vocabulary size matrix for the the included documents.
+#'
 #' @examples
 #' \dontrun{
-#' nips.topic.words <-
-#'   mallet.subset.topic.words(topic.model, documents$class == "NIPS", smoothed=T, normalized=T)
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Extract subcorpus topic word matrix
+#' post1975_topic_words <- mallet.subset.topic.words(topic.model, sotu[["year"]] > 1975)
+#' mallet.top.words(topic.model, word.weights = post1975_topic_words[2,], num.top.words = 5)
 #' }
 #'
 #' @export
@@ -229,17 +310,41 @@ mallet.subset.topic.words <- function(topic.model, subset.docs, normalized=FALSE
 #' to that word in the word weights vector you supplied.
 #'
 #' @param topic.model
-#' The model returned by \code{MalletLDA}
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
+#'
 #' @param word.weights
 #' A vector of word weights for one topic, usually a row from the \code{topic.words}
 #' matrix from \code{mallet.topic.words}.
 #' @param num.top.words
 #' The number of most probable words to return. If not specified, defaults to 10.
 #'
+#' @returns a \code{data.frame} with the top terms (\code{term}) and their weights/probability (\code{weight}).
+#'
+#' @examples
+#' \dontrun{
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Extract top words
+#' top_words <- mallet.top.words(topic.model, word.weights = topic_words[2,], num.top.words = 5)
+#' }
+#'
 #' @export
 mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
   top.indices <- order(word.weights, decreasing=T)[1:num.top.words]
-  data.frame(words = topic.model$getVocabulary()[top.indices], weights = word.weights[top.indices], stringsAsFactors=F)
+  data.frame(term = topic.model$getVocabulary()[top.indices], weight = word.weights[top.indices], stringsAsFactors=F)
 }
 
 #' @title
@@ -267,15 +372,21 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 #' @seealso
 #' \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.
 #'
+#' @returns a \code{cc/mallet/types/InstanceList} object.
+#'
+#' @examples
 #' @examples
 #' \dontrun{
+#' # Read in sotu example data
 #' data(sotu)
-#' stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
-#' mallet.instances <-
-#'   mallet.import(text.array = sotu[["text"]],
-#'   stoplist = stopwords_en,
-#'   token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
 #' }
+#'
 #' @export
 mallet.import <- function(id.array = NULL, text.array, stoplist = "", preserve.case=FALSE, token.regexp="[\\p{L}]+") {
   checkmate::assert_character(id.array, null.ok = TRUE, len = length(text.array))
@@ -340,12 +451,12 @@ mallet.import <- function(id.array = NULL, text.array, stoplist = "", preserve.c
 #' @seealso
 #' \code{\link{mallet.import}}
 #'
+#' @returns a \code{data.frame} with file \code{id} and \code{text} content.
+#'
 #' @examples
 #' \dontrun{
-#' documents <- mallet.read.dir(Dir)
-#' mallet.instances <-
-#'   mallet.import(documents$id, documents$text, "en.txt",
-#'                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+#' directory <- system.file("stoplists", package = "mallet")
+#' stoplists <- mallet.read.dir(directory)
 #' }
 #'
 #' @export
@@ -377,7 +488,7 @@ mallet.read.dir <- function(Dir) {
 #' most probable words in that topic separated by spaces.
 #'
 #' @param topic.model
-#' The model returned by \code{MalletLDA}
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
 #' @param topic.words
 #' The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
 #' Default (NULL) is to use the \code{topic.model} to extract the \code{topic.words}.
@@ -386,10 +497,33 @@ mallet.read.dir <- function(Dir) {
 #' @param ...
 #' Further arguments supplied to \code{\link{mallet.topic.words}}.
 #'
+#' @returns a character vector with one element per topic
 #'
 #' @seealso
 #' \code{\link{mallet.topic.words}} produces topic-word weights.
 #' \code{\link{mallet.top.words}} produces a data frame for a single topic.
+#'
+#' @examples
+#' \dontrun{
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Create hiearchical clusters of topics
+#' topic_labels <- mallet.topic.labels(topic.model)
+#' plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
+#' }
 #'
 #' @export
 mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3, ...) {
@@ -427,12 +561,30 @@ mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3
 #'
 #' @seealso
 #' This function uses data matrices from \code{\link{mallet.doc.topics}}
-#' and \code{\link{mallet.topic.words}}
+#' and \code{\link{mallet.topic.words}} using the \code{\link{hclust}} function.
+#'
+#' @returns An object of class \code{\link{hclust}} which describes the tree produced by the clustering process.
 #'
 #' @examples
 #' \dontrun{
-#'   topic.labels <- mallet.topic.labels(topic.model, topic.words, 3)
-#'   plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic.labels)
+#' # Read in sotu example data
+#' data(sotu)
+#' sotu.instances <-
+#'    mallet.import(id.array = row.names(sotu),
+#'                  text.array = sotu[["text"]],
+#'                  stoplist = mallet_stoplist_file_path("en"),
+#'                  token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
+#'
+#' # Create topic model
+#' topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+#' topic.model$loadDocuments(sotu.instances)
+#'
+#' # Train topic model
+#' topic.model$train(200)
+#'
+#' # Create hiearchical clusters of topics
+#' topic_labels <- mallet.topic.labels(topic.model)
+#' plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
 #' }
 #'
 #' @export
@@ -456,7 +608,8 @@ mallet.topic.hclust <- function(doc.topics, topic.words, balance = 0.3, method =
 #' This function returns the topic model loaded from a file or stores a topic model to file.
 #'
 #' @param filename The mallet topic model file
-#' @param topic.model A topic model to save/write to file
+#' @param topic.model
+#' A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.
 #'
 #' @export
 mallet.topic.model.read <- function(filename) {
@@ -485,8 +638,8 @@ mallet.topic.model.save <- mallet.topic.model.write
 #' @description
 #' This function returns the topic model loaded from a file.
 #'
-#' @param filename The mallet topic model file
-#' @param instances An instances object to save/write to file
+#' @param filename The filename to save to or load from.
+#' @param instances An \code{cc/mallet/types/InstanceList} \code{instanceList} object to save/write to file.
 #'
 #' @export
 save.mallet.instances <- function(instances, filename) {

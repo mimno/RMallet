@@ -172,6 +172,12 @@ sotu[["text"]][idx]
 
 ```
 
+We can also study the topics and how the differ in different parts of the corpus, for example in different time periods. 
+```{r}
+post1975_topic_words <- mallet.subset.topic.words(topic.model, sotu[["year"]] > 1975)
+mallet.top.words(topic.model, word.weights = post1975_topic_words[2,], num.top.words = 5)
+```
+
 Another functionality included in the ```mallet``` R package is to (hierarchically) cluster the topics to assess what topics that are "closer" to each other. Use ```?mallet.topic.hclust``` to see further details on how to cluster topics.
 
 ```{r, fig.height=5, fig.width=5}

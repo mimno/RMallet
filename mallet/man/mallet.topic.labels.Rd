@@ -7,7 +7,7 @@
 mallet.topic.labels(topic.model, topic.words = NULL, num.top.words = 3, ...)
 }
 \arguments{
-\item{topic.model}{The model returned by \code{MalletLDA}}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 
 \item{topic.words}{The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
 Default (NULL) is to use the \code{topic.model} to extract the \code{topic.words}.}
@@ -16,9 +16,35 @@ Default (NULL) is to use the \code{topic.model} to extract the \code{topic.words
 
 \item{...}{Further arguments supplied to \code{\link{mallet.topic.words}}.}
 }
+\value{
+a character vector with one element per topic
+}
 \description{
 This function returns a vector of strings, one for each topic, with the
 most probable words in that topic separated by spaces.
+}
+\examples{
+\dontrun{
+# Read in sotu example data
+data(sotu)
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
+# Create topic model
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+topic.model$loadDocuments(sotu.instances)
+
+# Train topic model
+topic.model$train(200)
+
+# Create hiearchical clusters of topics
+topic_labels <- mallet.topic.labels(topic.model)
+plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
+}
+
 }
 \seealso{
 \code{\link{mallet.topic.words}} produces topic-word weights.
