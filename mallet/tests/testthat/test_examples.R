@@ -29,6 +29,6 @@ test_that(desc="Test that all examples runs correctly",{
 
   # Create hiearchical clusters of topics
   topic_labels <- mallet.topic.labels(topic.model)
-  plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
+  plot(mallet.topic.hclust(doc_topics, topic_words, balance = 0.3), labels=topic_labels)
 
 })

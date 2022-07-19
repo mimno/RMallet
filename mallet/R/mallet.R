@@ -523,8 +523,10 @@ mallet.read.dir <- function(Dir) {
 #' topic.model$train(200)
 #'
 #' # Create hiearchical clusters of topics
+#' doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+#' topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
 #' topic_labels <- mallet.topic.labels(topic.model)
-#' plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
+#' plot(mallet.topic.hclust(doc_topics, topic_words, balance = 0.3), labels=topic_labels)
 #' }
 #'
 #' @export
@@ -585,8 +587,10 @@ mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3
 #' topic.model$train(200)
 #'
 #' # Create hiearchical clusters of topics
+#' doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+#' topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
 #' topic_labels <- mallet.topic.labels(topic.model)
-#' plot(mallet.topic.hclust(doc.topics, topic.words, balance = 0.3), labels=topic_labels)
+#' plot(mallet.topic.hclust(doc_topics, topic_words, balance = 0.3), labels=topic_labels)
 #' }
 #'
 #' @export
