@@ -12,7 +12,7 @@ Authors@R: c(
 Maintainer: Måns Magnusson <mons.magnusson@gmail.com>
 Description: 
   An R interface for the Java Machine Learning for Language Toolkit (mallet)
-  <http://mallet.cs.umass.edu/> to estimate probabilistic topic models, such
+  <https://mimno.github.io/Mallet/> to estimate probabilistic topic models, such
   as Latent Dirichlet Allocation. We can use the R package to read textual 
   data into mallet from R objects, run the Java implementation of mallet 
   directly in R, and extract results as R objects. The Mallet toolkit 
