@@ -1,11 +1,21 @@
 Package: mallet
 Type: Package
-Title: A Wrapper Around the Java Machine Learning Tool MALLET
+Title: A Wrapper Around the Java Machine Learning Tool Mallet
 Version: 1.3.0
-Date: 2022-07-18
-Author: David Mimno, Måns Magnusson
+Date: 2022-07-19
+Authors@R: c(
+    person("Måns", "Magnusson", "mons.magnusson@gmail.com", role = "aut",
+           comment = c(ORCID = "0000-0002-0296-2719")),
+    person("David", "Mimno", role = c("cre", "aut"), 
+           comment = c(ORCID = "0000-0001-7510-9404"))
+  )
 Maintainer: Måns Magnusson <mons.magnusson@gmail.com>
-Description: Train topic models using mallet and load results directly into R.
+Description: 
+  An R interface for the Java Machine Learning for Language Toolkit (mallet)
+  <http://mallet.cs.umass.edu/> to estimate probabilistic topic models. 
+  We can use the R package to read textual data into mallet from R objects, 
+  run the Java implementation of mallet directly in R, and extract results
+  as R objects.
 License: MIT + file LICENSE
 SystemRequirements: java
 Encoding: UTF-8
