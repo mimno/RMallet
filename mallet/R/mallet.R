@@ -1,11 +1,14 @@
 #' @title
-#' An R Wrapper for the Mallet Topic Modeling Package
+#' An R Wrapper for the Java Mallet Topic Modeling Toolkit
 #'
 #' @description
-#' This package provides an interface to the Java implementation of latent
-#' Dirichlet allocation in the Mallet machine learning package. Mallet has many
-#' functions, this wrapper focuses on the topic modeling sub-package written by
-#' David Mimno. The package uses the \code{rJava} package to connect to a JVM.
+#' An R interface for the Java Machine Learning for Language Toolkit (mallet)
+#' <http://mallet.cs.umass.edu/> to estimate probabilistic topic models, such
+#' as Latent Dirichlet Allocation. We can use the R package to read textual data into mallet from R objects,
+#' run the Java implementation of mallet directly in R, and extract results
+#' as R objects. The Mallet toolkit  has many functions, this wrapper focuses
+#' on the topic modeling sub-package written by David Mimno. The package uses
+#' the rJava package to connect to a JVM.
 #'
 #' @references
 #' The model, Latent Dirichlet allocation (LDA):
