@@ -140,7 +140,7 @@ test_that(desc="mallet.top.words and mallet.topic.labels",{
     top.words <- mallet.top.words(topic.model, word.weights = mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)[2,], num.top.words = 5)
   )
   expect_equal(dim(top.words), c(5,2))
-  expect_lt(object = sum(top.words$weights), expected = 1)
+  expect_lt(object = sum(top.words$weight), expected = 1)
 
   checkmate::expect_character(mallet.topic.labels(topic.model), min.chars = 6, any.missing = FALSE, len = 10)
 })

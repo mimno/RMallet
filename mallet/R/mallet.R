@@ -378,7 +378,6 @@ mallet.top.words <- function(topic.model, word.weights, num.top.words=10) {
 #' @returns a \code{cc/mallet/types/InstanceList} object.
 #'
 #' @examples
-#' @examples
 #' \dontrun{
 #' # Read in sotu example data
 #' data(sotu)
@@ -536,7 +535,7 @@ mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3
   topic.model
   n.topics <- dim(topic.words)[1]
   topics.labels <- rep("", n.topics)
-  for (topic in 1:n.topics) topics.labels[topic] <- paste(mallet.top.words(topic.model, topic.words[topic,], num.top.words)$words, collapse=" ")
+  for (topic in 1:n.topics) topics.labels[topic] <- paste(mallet.top.words(topic.model, topic.words[topic,], num.top.words)$term, collapse=" ")
   topics.labels
 }
 
