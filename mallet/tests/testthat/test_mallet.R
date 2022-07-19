@@ -102,7 +102,7 @@ test_that(desc="Issue #2 bug",{
   expect_equal(sum(topic.words), sum(doc.topics))
 
   res <- cbind(correct.counts = apply(topic.words, 2, sum), word.freqs)
-  expect_equal(res$correct.counts, res$term.freq)
+  expect_equal(res$correct.counts, res$word.freq)
 
   }
 )
