@@ -14,11 +14,11 @@ Description:
   An R interface for the Java Machine Learning for Language Toolkit (mallet)
   <https://mimno.github.io/Mallet/> to estimate probabilistic topic models, such
   as Latent Dirichlet Allocation. We can use the R package to read textual 
-  data into mallet from R objects, run the Java implementation of mallet 
-  directly in R, and extract results as R objects. The Mallet toolkit 
+  data into 'mallet' from R objects, run the Java implementation of 'mallet' 
+  directly in R, and extract results as R objects. The 'mallet' toolkit 
   has many functions, this wrapper focuses on the topic modeling sub-package 
-  written by David Mimno. The package uses the rJava package to connect to a 
-  JVM.
+  written by David Mimno. The package uses the 'rJava' package to connect to a 
+  Java Virtual Machine (JVM).
 License: MIT + file LICENSE
 URL: https://github.com/mimno/RMallet
 BugReports: https://github.com/mimno/RMallet/issues
