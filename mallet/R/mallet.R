@@ -541,8 +541,6 @@ mallet.topic.labels <- function(topic.model, topic.words = NULL, num.top.words=3
   topics.labels
 }
 
-## Return a hierarchical clustering of topics.
-
 #' @title
 #' Return a hierarchical clustering of topics
 #'
