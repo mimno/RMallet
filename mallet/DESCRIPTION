@@ -1,8 +1,8 @@
 Package: mallet
 Type: Package
 Title: An R Wrapper for the Java Mallet Topic Modeling Toolkit
-Version: 1.3.0
-Date: 2022-07-19
+Version: 1.3.1
+Date: 2022-07-21
 Authors@R: c(
     person("Måns", "Magnusson", email = "mons.magnusson@gmail.com", role = c("cre", "aut"),
            comment = c(ORCID = "0000-0002-0296-2719")),
