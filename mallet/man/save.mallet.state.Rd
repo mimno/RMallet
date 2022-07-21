@@ -7,12 +7,12 @@
 save.mallet.state(topic.model, state.file)
 }
 \arguments{
-\item{topic.model}{a mallet \code{topic.model} object}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 
 \item{state.file}{File path (.gz format) to store the mallet state file to.}
 }
 \description{
-This function writes a current sampling state of mallet to file. 
+This function writes a current sampling state of mallet to file.
 The state contain hyperparameters \eqn{\alpha} and \eqn{\beta} together with topic indicators.
 
 The state file can be read into R using the function

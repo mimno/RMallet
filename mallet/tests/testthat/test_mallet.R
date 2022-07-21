@@ -74,7 +74,7 @@ test_that(desc="Train model 2 (with stopwords)",{
 
 
 test_that(desc="Issue #2 bug",{
-  skip("Bug to be fixed.")
+  skip_on_cran()
 
   documents <- data.frame(id=as.character(1:5), text=c("this is an example document",
                                                        "here is another example document",
@@ -102,7 +102,36 @@ test_that(desc="Issue #2 bug",{
   expect_equal(sum(topic.words), sum(doc.topics))
 
   res <- cbind(correct.counts = apply(topic.words, 2, sum), word.freqs)
-  expect_equal(res$correct.counts, res$term.freq)
+  expect_equal(res$correct.counts, res$word.freq)
 
   }
 )
+
+
+
+test_that(desc="Test that hclust works as expected",{
+  skip_on_cran()
+
+  expect_silent(
+    sotu.instances <-
+      mallet.import(text.array = sotu[["text"]])
+  )
+
+  expect_silent(
+    topic.model <- MalletLDA(num.topics=5, alpha.sum = 1, beta = 0.1)
+  )
+
+  expect_silent(
+    topic.model$loadDocuments(sotu.instances)
+  )
+
+  expect_silent(
+    topic.model$train(20)
+  )
+
+  expect_silent(dt <- mallet.doc.topics(topic.model))
+  expect_silent(tw <- mallet.topic.words(topic.model))
+  expect_silent(
+    res <- mallet.topic.hclust(dt, tw)
+  )
+})

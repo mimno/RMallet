@@ -4,18 +4,49 @@
 \alias{mallet.topic.labels}
 \title{Get strings containing the most probable words for each topic}
 \usage{
-mallet.topic.labels(topic.model, topic.words, num.top.words = 3)
+mallet.topic.labels(topic.model, topic.words = NULL, num.top.words = 3, ...)
 }
 \arguments{
-\item{topic.model}{The model returned by \code{MalletLDA}}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 
-\item{topic.words}{The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}}
+\item{topic.words}{The matrix of topic-word weights returned by \code{\link{mallet.topic.words}}
+Default (NULL) is to use the \code{topic.model} to extract the \code{topic.words}.}
 
-\item{num.top.words}{The number of words to include for each topic}
+\item{num.top.words}{The number of words to include for each topic. Defaults to 3.}
+
+\item{...}{Further arguments supplied to \code{\link{mallet.topic.words}}.}
+}
+\value{
+a character vector with one element per topic
 }
 \description{
 This function returns a vector of strings, one for each topic, with the
 most probable words in that topic separated by spaces.
+}
+\examples{
+\dontrun{
+# Read in sotu example data
+data(sotu)
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
+# Create topic model
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+topic.model$loadDocuments(sotu.instances)
+
+# Train topic model
+topic.model$train(200)
+
+# Create hiearchical clusters of topics
+doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
+topic_labels <- mallet.topic.labels(topic.model)
+plot(mallet.topic.hclust(doc_topics, topic_words, balance = 0.3), labels=topic_labels)
+}
+
 }
 \seealso{
 \code{\link{mallet.topic.words}} produces topic-word weights.

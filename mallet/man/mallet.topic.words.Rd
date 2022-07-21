@@ -7,7 +7,7 @@
 mallet.topic.words(topic.model, normalized = FALSE, smoothed = FALSE)
 }
 \arguments{
-\item{topic.model}{The model returned by \code{MalletLDA}}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 
 \item{normalized}{If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE},
 values will be integers (possibly plus the smoothing constant) representing the
@@ -16,7 +16,34 @@ actual number of words of each type in the topics.}
 \item{smoothed}{If \code{TRUE}, add the smoothing parameter for the model (initial value specified as
 \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.}
 }
+\value{
+a number of topics by vocabulary size matrix.
+}
 \description{
 This function returns a matrix with one row for every topic
 and one column for every word in the vocabulary.
+}
+\examples{
+\dontrun{
+# Read in sotu example data
+data(sotu)
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
+# Create topic model
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+topic.model$loadDocuments(sotu.instances)
+
+# Train topic model
+topic.model$train(200)
+
+# Extract results
+doc_topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
+topic_words <- mallet.topic.words(topic.model, smoothed=TRUE, normalized=TRUE)
+top_words <- mallet.top.words(topic.model, word.weights = topic_words[2,], num.top.words = 5)
+}
+
 }

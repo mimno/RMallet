@@ -10,9 +10,9 @@ save.mallet.instances(instances, filename)
 load.mallet.instances(filename)
 }
 \arguments{
-\item{instances}{An instances object to save/write to file}
+\item{instances}{An \code{cc/mallet/types/InstanceList} \code{instanceList} object to save/write to file.}
 
-\item{filename}{The mallet topic model file}
+\item{filename}{The filename to save to or load from.}
 }
 \description{
 This function returns the topic model loaded from a file.

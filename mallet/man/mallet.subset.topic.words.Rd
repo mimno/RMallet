@@ -12,10 +12,10 @@ mallet.subset.topic.words(
 )
 }
 \arguments{
-\item{topic.model}{The model returned by \code{MalletLDA}}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
 
-\item{subset.docs}{An array of \code{TRUE}/\code{FALSE} values specifying which documents should
-be used and which should be ignored.}
+\item{subset.docs}{A logical vector of \code{TRUE}/\code{FALSE} values specifying which documents should
+be used/included and which should be ignored.}
 
 \item{normalized}{If \code{TRUE}, normalize the rows so that each topic sums to one. If \code{FALSE},
 values will be integers (possibly plus the smoothing constant) representing
@@ -23,6 +23,9 @@ the actual number of words of each type in the topics.}
 
 \item{smoothed}{If \code{TRUE}, add the smoothing parameter for the model (initial value specified
 as \code{beta} in \code{MalletLDA}). If \code{FALSE}, many values will be zero.}
+}
+\value{
+a number of topics by vocabulary size matrix for the the included documents.
 }
 \description{
 This function returns a matrix of word probabilities for each topic similar to
@@ -34,8 +37,24 @@ of documents.
 }
 \examples{
 \dontrun{
-nips.topic.words <-
-  mallet.subset.topic.words(topic.model, documents$class == "NIPS", smoothed=T, normalized=T)
+# Read in sotu example data
+data(sotu)
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
+# Create topic model
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+topic.model$loadDocuments(sotu.instances)
+
+# Train topic model
+topic.model$train(200)
+
+# Extract subcorpus topic word matrix
+post1975_topic_words <- mallet.subset.topic.words(topic.model, sotu[["year"]] > 1975)
+mallet.top.words(topic.model, word.weights = post1975_topic_words[2,], num.top.words = 5)
 }
 
 }

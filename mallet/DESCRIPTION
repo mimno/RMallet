@@ -1,13 +1,27 @@
 Package: mallet
 Type: Package
-Title: A wrapper around the Java machine learning tool MALLET
+Title: An R Wrapper for the Java Mallet Topic Modeling Toolkit
 Version: 1.3.0
-Date: 2022-07-01
-Author: David Mimno, Måns Magnusson
-Maintainer: David Mimno <mimno@cornell.edu>
-Description: This package allows you to train topic models in mallet and load
-    results directly into R.
+Date: 2022-07-19
+Authors@R: c(
+    person("Måns", "Magnusson", email = "mons.magnusson@gmail.com", role = c("cre", "aut"),
+           comment = c(ORCID = "0000-0002-0296-2719")),
+    person("David", "Mimno", role = c("aut", "cph"), 
+           comment = c(ORCID = "0000-0001-7510-9404"))
+  )
+Maintainer: Måns Magnusson <mons.magnusson@gmail.com>
+Description: 
+  An R interface for the Java Machine Learning for Language Toolkit (mallet)
+  <https://mimno.github.io/Mallet/> to estimate probabilistic topic models, such
+  as Latent Dirichlet Allocation. We can use the R package to read textual 
+  data into 'mallet' from R objects, run the Java implementation of 'mallet' 
+  directly in R, and extract results as R objects. The 'mallet' toolkit 
+  has many functions, this wrapper focuses on the topic modeling sub-package 
+  written by David Mimno. The package uses the 'rJava' package to connect to a 
+  Java Virtual Machine (JVM).
 License: MIT + file LICENSE
+URL: https://github.com/mimno/RMallet
+BugReports: https://github.com/mimno/RMallet/issues
 SystemRequirements: java
 Encoding: UTF-8
 Depends: 

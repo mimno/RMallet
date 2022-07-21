@@ -7,7 +7,10 @@
 mallet.word.freqs(topic.model)
 }
 \arguments{
-\item{topic.model}{A Mallet topic trainer returned by \code{MalletLDA}}
+\item{topic.model}{A \code{cc.mallet.topics.RTopicModel} object created by \code{\link{MalletLDA}}.}
+}
+\value{
+a \code{data.frame} with the word type (\code{word}), the word frequency (\code{word.freq}), and the document frequency (\code{doc.freq})
 }
 \description{
 This method returns a data frame with one row for each unique vocabulary word,
@@ -15,6 +18,26 @@ and three columns: the word as a \code{character} value, the total number of
 tokens of that word type, and the total number of documents that contain that
 word at least once. This information can be useful in identifying candidate
 stopwords.
+}
+\examples{
+\dontrun{
+# Read in sotu example data
+data(sotu)
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
+# Create topic model
+topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
+topic.model$loadDocuments(sotu.instances)
+
+# Get word frequencies
+word_freqs <- mallet.word.freqs(topic.model)
+
+}
+
 }
 \seealso{
 \code{\link{MalletLDA}}

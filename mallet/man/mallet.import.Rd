@@ -27,19 +27,25 @@ Default is no stoplist.}
 is one or more unicode letter: "[\\\\p\{L\}]+". Note that special characters must
 have double backslashes.}
 }
+\value{
+a \code{cc/mallet/types/InstanceList} object.
+}
 \description{
 This function takes an array of document IDs and text files (as character strings)
 and converts them into a Mallet instance list.
 }
 \examples{
 \dontrun{
+# Read in sotu example data
 data(sotu)
-stopwords_en <- system.file("stoplists/en.txt", package = "mallet")
-mallet.instances <-
-  mallet.import(text.array = sotu[["text"]],
-  stoplist = stopwords_en,
-  token.regexp = "\\\\\\\\p{L}[\\\\\\\\p{L}\\\\\\\\p{P}]+\\\\\\\\p{L}")
+sotu.instances <-
+   mallet.import(id.array = row.names(sotu),
+                 text.array = sotu[["text"]],
+                 stoplist = mallet_stoplist_file_path("en"),
+                 token.regexp = "\\\\p{L}[\\\\p{L}\\\\p{P}]+\\\\p{L}")
+
 }
+
 }
 \seealso{
 \code{\link{mallet.word.freqs}} returns term and document frequencies, which may be useful in selecting stopwords.

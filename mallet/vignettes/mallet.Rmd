@@ -9,6 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, echo=FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+
 ## Installation
 
 To use the mallet R package, we need to use `rJava`, an R package for using Java within R (to access the mallet Java code). See details at [github.com/s-u/rJava](https://github.com/s-u/rJava).
@@ -33,7 +38,26 @@ To load the package, use ```library()```.
 library(mallet)
 ```
 
-We start by using the example data set of the State of the Union addresses from 1946 to 2000.
+### Reading data into R
+
+There are multiple ways to read text data into R. A simple way is to read individual text files into a character vector. Below is an example of reading the different stop list txt files that come with the ```mallet``` package into R as a character vector (that can be used by the ```mallet``` R package as data).
+
+```{r}
+# Note this is the path to the folder where the stoplists are stored in the R package.
+# Change this path to another directory to read other txt files into R.
+directory <- system.file("stoplists", package = "mallet")
+
+files_in_directory <- list.files(directory, full.names = TRUE)
+
+txt_file_content <- character(length(files_in_directory))
+for(i in seq_along(files_in_directory)){
+  txt_file_content[i] <- paste(readLines(files_in_directory[i]), collapse = "\n")
+}
+# We can check the content with str()
+str(txt_file_content)
+```
+
+We will now use the example data set of the State of the Union addresses from 1946 to 2000 that is included with the ```mallet``` R package as a ```data.frame```. This data can be accessed as follows.
 
 ```{r}
 library(dplyr)
@@ -41,15 +65,16 @@ data(sotu)
 sotu[["text"]][1:2]
 ```
 
-Mallet comes with five different stop list files.
+Mallet also comes with five different stop list files (see above). We can access the path to these lists as follows.
 
 ```{r}
 mallet_supported_stoplists()
 stopwords_en_file_path <- mallet_stoplist_file_path("en")
 ```
 
-As a first step, we need to create an LDA trainer object and supply the trainer with documents. We start by creating a mallet instance list object. 
+### Training topic models
 
+As a first step, we need to create an LDA trainer object and supply the trainer with documents. We start by creating a mallet instance list object. 
 This function has a few extra options (whether to lowercase or how we define a token). See ```?mallet.import``` for details.
 
 ```{r}
@@ -60,7 +85,7 @@ sotu.instances <-
                 token.regexp = "\\p{L}[\\p{L}\\p{P}]+\\p{L}")
 ```
 
-If the data is already cleaned and we want to use the index of `text.array`, we can just supply the `text.array`.
+If the data is already cleaned and we want to use the index of `text.array`, we can supply the `text.array`.
 
 ```{r}
 sotu.instances.short <- 
@@ -89,14 +114,22 @@ Load our documents. We could also pass in the filename of a saved instance list 
 topic.model$loadDocuments(sotu.instances)
 ```
 
-To get the model's vocabulary, we use the method `getVocabulary()`. The vocabulary may be helpful in further curating the stopword list.
+We use the method `getVocabulary()` to get the model's vocabulary. The vocabulary may be helpful in further curating the stopword list.
 
 ```{r}
 vocabulary <- topic.model$getVocabulary()
 head(vocabulary)
 ```
 
-Optimize hyperparameters (\code{alpha} and \code{beta}) every 20 iterations, after 50 burn-in iterations.
+Similarly, we can access the word and document frequencies with ```mallet.word.freqs()```.
+
+```{r}
+word_freqs <- mallet.word.freqs(topic.model)
+head(word_freqs)
+```
+
+
+To optimize hyperparameters (\code{alpha} and \code{beta}) every 20 iterations, after 50 burn-in iterations, we set alpha optimization as follows.
 
 ```{r}
 topic.model$setAlphaOptimization(20, 50)
@@ -114,7 +147,9 @@ We can also run through a few iterations where we pick the best topic for each t
 topic.model$maximize(10)
 ```
 
-Get the probability of topics in documents and the probability of words in topics. By default, these functions return raw word counts. Here we want probabilities, so we normalize and add "smoothing" so that nothing has exactly 0 probability.
+### Analysis of a topic model
+
+To analyze our corpus using our model, we usually want to access the probability of topics per document and the probability of words per topic. By default, these functions return raw word counts. Here we want probabilities, so we normalize and add "smoothing" so that nothing has exactly 0 probability.
 
 ```{r}
 doc.topics <- mallet.doc.topics(topic.model, smoothed=TRUE, normalized=TRUE)
@@ -134,12 +169,26 @@ docs <- which(doc.topics[,2] > 0.50)
 doc_size <- nchar(sotu[["text"]])[docs]
 idx <- docs[order(doc_size, decreasing = TRUE)[1]]
 sotu[["text"]][idx]
+
 ```
 
+We can also study the topics and how the differ in different parts of the corpus, for example in different time periods. 
+```{r}
+post1975_topic_words <- mallet.subset.topic.words(topic.model, sotu[["year"]] > 1975)
+mallet.top.words(topic.model, word.weights = post1975_topic_words[2,], num.top.words = 5)
+```
+
+Another functionality included in the ```mallet``` R package is to (hierarchically) cluster the topics to assess what topics that are "closer" to each other. Use ```?mallet.topic.hclust``` to see further details on how to cluster topics.
+
+```{r, fig.height=5, fig.width=5}
+topic_labels <- mallet.topic.labels(topic.model, num.top.words = 2)
+topic_clusters <- mallet.topic.hclust(doc.topics, topic.words, balance = 0.5)
+plot(topic_clusters, labels=topic_labels, xlab = "", )
+```
 
 ## Save and load topic states
 
-We can also store our current topic model state to use it for postprocessing. We can store the state file either as a txt file or a compressed gzip file.
+We can also store our current topic model state to use it for postprocessing. We can store the state file either as a text file or a compressed gzip file.
 
 ```{r}
 state_file <- file.path(tempdir(), "temp_mallet_state.gz")
@@ -154,7 +203,7 @@ doc.topics.counts <- mallet.doc.topics(topic.model, smoothed=FALSE, normalized=F
 rm(topic.model)
 ```
 
-To initialize a model with the sampled topic indicators, one needs to create a new model, load the same data and then load the topic indicators. Unfortunately, it is not possible to set the alpha parameter vector, so it is not currently possible to initialize the model with the same alpha prior.
+To initialize a model with the sampled topic indicators, one needs to create a new model, load the same data and then load the topic indicators. Unfortunately, setting the alpha parameter vector is currently not possible, so it is not currently possible to initialize the model with the same alpha prior.
 
 ```{r}
 new.topic.model <- MalletLDA(num.topics=10, alpha.sum = 1, beta = 0.1)
@@ -179,3 +228,4 @@ read.topic.model <- mallet.topic.model.read(model_file)
 doc.topics.counts[1:3, 1:6]
 mallet.doc.topics(read.topic.model, smoothed=FALSE, normalized=FALSE)[1:3, 1:6]
 ```
+
